@@ -1,5 +1,5 @@
 ---
-title: "Practicals_for_Final"
+title: "R Basics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Practicals_for_Final}
@@ -78,7 +78,8 @@ means_of_second_col_and_sixth_row <- c(second_col_mean, sixth_row_mean)
 means_of_second_col_and_sixth_row
 ```
 
-# Using a "for" loop 
+# Using loops
+
 ## Demonstrating the obvious point that with a ratio (let's pretend we're talking about F), as the denominator ("within-group differences") gets larger, the overall ratio ("effect") gets smaller. Output gets smaller with each iteration.
 ```{r}
 
@@ -105,7 +106,8 @@ while(i <= 100){
 
 ```
 
-## Demonstrating simple logic
+# Demonstrating simple logic
+
 ### With a vector
 
 ```{r}
@@ -132,7 +134,7 @@ incongruent_values <- c(data_frame_example$data[data_frame_example$congruency ==
 incongruent_values
 ```
 
-## Combining loops and logic to solve the "Fizz-Buzz" problem
+# Combining loops and logic to solve the "Fizz-Buzz" problem
 
 ```{r}
 fizzy_buzzy <- vector()
@@ -150,7 +152,7 @@ for(i in 1:100){
 print(fizzy_buzzy)
 ```
 
-## Advanced problem of choice: Problem 3 - Testing the Random Number Generator
+# Advanced problem of choice: Problem 3 - Testing the Random Number Generator
 
 ```{r}
 
@@ -177,6 +179,7 @@ mean(frequency_table$Frequencies)
 ```{r}
 hist(freq)
 ```
+
 ### The mean is close to most values in the dataset, the range is quite small (<10% of most values), and the histogram is quite flat (although, inexplicably, the random number generator does indeed seems to be biased away from selecting the number 100, specifically). I considered running a one-sample T-Test, but it occurred to me that the process of identifying the null hypothesis population mean would require circular reasoning, and this question only required a descriptive characterization of the distribution. 
 
 # Question 6: Functions in the Package 
@@ -185,7 +188,7 @@ hist(freq)
 
 ## The entire set of working code for all six functions can be found in the "Final_Lab_WYOR" script, available under the "articles" tab. For direct reference, the working code for the function demonstrated below can be found at the end of this document. 
 
-### Here, I will demonstrate just the second function: percent.area.plane. This function loads a .CSV file, organizes the data according to two factors (2x3, group by coronal plane of brain tissue imaged and analyzed), generating three side-by-side plots comparing the groups across each of the second factor, and outputting a vector containing the P-Values for the three corresponding unpaired-samples T-Tests. 
+### Here, I will demonstrate just the second function: percent.area.plane. This function loads a .CSV file, organizes the data according to two factors (2x3, group by location of tissue analyzed), generating three side-by-side plots comparing the groups across each of the second factor, and outputting a vector containing the P-Values for the three corresponding unpaired-samples T-Tests. 
 
 ### Imaging data .CSV files are assumed to use a particular naming format, and to be derived from a "Custom Macros" plugin for the image analysis program ImageJ; this plugin extracts various forms of imaging data pertaining to characteristics of fluorescence-immunolabeled cells. The other functions in the "immuno.analyze" package cover two other forms of data, and can be used to average across the second factor.
 

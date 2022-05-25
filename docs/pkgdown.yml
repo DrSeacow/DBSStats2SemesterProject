@@ -3,7 +3,6 @@ pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   About: About.html
-  Aboutreviews: Aboutreviews.html
   Final_Lab_WYOR: Final_Lab_WYOR.html
   Lab1: Lab1.html
   Lab10_NestedDesigns: Lab10_NestedDesigns.html
@@ -15,7 +14,8 @@ articles:
   Lab7_FactorialAnova: Lab7_FactorialAnova.html
   Lab8_FactorialAnova_Pt2_w_Contrasts: Lab8_FactorialAnova_Pt2_w_Contrasts.html
   Lab9_RMAnova: Lab9_RMAnova.html
+  Link_to_Slideshow: Link_to_Slideshow.html
   R_Basics_Practicals: R_Basics_Practicals.html
   slide_deck: slide_deck.html
-last_built: 2022-05-25T16:09Z
+last_built: 2022-05-25T17:39Z
 

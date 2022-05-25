@@ -1,0 +1,23 @@
+---
+title: "Link_to_Slideshow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Link_to_Slideshow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Follow link for a slideshow explaining the key details behind my new "immuno.analyze" package.
+
+file:///C:/Users/m3gad/AppData/Local/Temp/RtmpYTCYnG/preview-910876b857de.dir/slide_deck.html#1
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

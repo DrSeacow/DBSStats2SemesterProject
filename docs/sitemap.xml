@@ -10,9 +10,6 @@
     <loc>/Articles/About.html</loc>
   </url>
   <url>
-    <loc>/Articles/Aboutreviews.html</loc>
-  </url>
-  <url>
     <loc>/Articles/Final_Lab_WYOR.html</loc>
   </url>
   <url>
@@ -49,6 +46,9 @@
     <loc>/Articles/Lab9_RMAnova.html</loc>
   </url>
   <url>
+    <loc>/Articles/Link_to_Slideshow.html</loc>
+  </url>
+  <url>
     <loc>/Articles/R_Basics_Practicals.html</loc>
   </url>
   <url>
@@ -83,8 +83,5 @@
   </url>
   <url>
     <loc>/reference/percent.area.plane.html</loc>
-  </url>
-  <url>
-    <loc>/R_Basics/R_Basics_Practicals.html</loc>
   </url>
 </urlset>

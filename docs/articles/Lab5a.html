@@ -53,9 +53,6 @@
       <a href="../articles/About.html">About</a>
     </li>
     <li>
-      <a href="../articles/Aboutreviews.html">Aboutreviews</a>
-    </li>
-    <li>
       <a href="../articles/Final_Lab_WYOR.html">Final_Lab_WYOR</a>
     </li>
     <li>
@@ -89,10 +86,13 @@
       <a href="../articles/Lab9_RMAnova.html">Lab9_RMAnova</a>
     </li>
     <li>
-      <a href="../articles/R_Basics_Practicals.html">Practicals_for_Final</a>
+      <a href="../articles/Link_to_Slideshow.html">Link_to_Slideshow</a>
     </li>
     <li>
-      <a href="../articles/slide_deck.html">Intro to Immuno Analyze</a>
+      <a href="../articles/R_Basics_Practicals.html">R Basics</a>
+    </li>
+    <li>
+      <a href="../articles/slide_deck.html">Intro to Immuno Analyze (follow article ~link_to_slideshow~ for slides)</a>
     </li>
   </ul>
 </li>
@@ -153,8 +153,8 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">aov.out</span><span class="op">)</span>
 <span class="co">#&gt;             Df Sum Sq Mean Sq F value Pr(&gt;F)</span>
-<span class="co">#&gt; IV           2  0.647  0.3234   0.307  0.738</span>
-<span class="co">#&gt; Residuals   27 28.466  1.0543</span></code></pre></div>
+<span class="co">#&gt; IV           2  0.565  0.2826   0.401  0.673</span>
+<span class="co">#&gt; Residuals   27 19.023  0.7046</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
 <span class="co">#&gt; Warning: package 'ggplot2' was built under R version 4.1.3</span>
@@ -199,14 +199,14 @@
 <span class="op">}</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">aov.out</span><span class="op">)</span>
-<span class="co">#&gt;             Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span>
-<span class="co">#&gt; IV           2  12.46   6.229   11.54 0.000239 ***</span>
-<span class="co">#&gt; Residuals   27  14.57   0.540                     </span>
+<span class="co">#&gt;             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span>
+<span class="co">#&gt; IV           2  5.828  2.9142    3.63 0.0402 *</span>
+<span class="co">#&gt; Residuals   27 21.677  0.8029                 </span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">i</span>
-<span class="co">#&gt; [1] 17</span></code></pre></div>
+<span class="co">#&gt; [1] 59</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="by-design-we-would-reject-the-null-hypothesis-as-the-simulated-f-value-here-is-greater-than-the-critical-f-value--we-would-have-95-certainty-that-this-was-the-correct-decision--however-we-know-for-a-fact-that-this-falls-in-the-unfortunate-5-error-range-as-the-data-is-randomly-simulated-and-we-have-simply-designed-it-to-tell-us-whenever-it-gives-us-a-lucky-fraudulent-f-so-it-would-be-the-incorrect-decision-">By design, we would reject the null hypothesis as the simulated F value here is greater than the critical F value. We would have 95% certainty that this was the correct decision. However, we know for a fact that this falls in the unfortunate 5% error range, as the data is randomly simulated and we have simply designed it to tell us whenever it gives us a lucky fraudulent F (so it would be the incorrect decision).<a class="anchor" aria-label="anchor" href="#by-design-we-would-reject-the-null-hypothesis-as-the-simulated-f-value-here-is-greater-than-the-critical-f-value--we-would-have-95-certainty-that-this-was-the-correct-decision--however-we-know-for-a-fact-that-this-falls-in-the-unfortunate-5-error-range-as-the-data-is-randomly-simulated-and-we-have-simply-designed-it-to-tell-us-whenever-it-gives-us-a-lucky-fraudulent-f-so-it-would-be-the-incorrect-decision-"></a>
@@ -355,22 +355,22 @@
 <span class="va">Fs</span> <span class="op">&lt;-</span> <span class="va">F_comparison</span><span class="op">[</span><span class="va">F_comparison</span><span class="op">$</span><span class="va">type</span><span class="op">==</span><span class="st">"analytic"</span>,<span class="op">]</span><span class="op">$</span><span class="va">F_value</span>
 <span class="va">sorted_Fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">Fs</span><span class="op">)</span>
 <span class="va">sorted_Fs</span><span class="op">[</span><span class="fl">950</span><span class="op">]</span>
-<span class="co">#&gt; [1] 3.02534</span>
+<span class="co">#&gt; [1] 3.12578</span>
 
 <span class="va">Fs</span> <span class="op">&lt;-</span> <span class="va">F_comparison</span><span class="op">[</span><span class="va">F_comparison</span><span class="op">$</span><span class="va">type</span><span class="op">==</span><span class="st">"sim_0_1"</span>,<span class="op">]</span><span class="op">$</span><span class="va">F_value</span>
 <span class="va">sorted_Fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">Fs</span><span class="op">)</span>
 <span class="va">sorted_Fs</span><span class="op">[</span><span class="fl">950</span><span class="op">]</span>
-<span class="co">#&gt; [1] 3.027172</span>
+<span class="co">#&gt; [1] 3.017001</span>
 
 <span class="va">Fs</span> <span class="op">&lt;-</span> <span class="va">F_comparison</span><span class="op">[</span><span class="va">F_comparison</span><span class="op">$</span><span class="va">type</span><span class="op">==</span><span class="st">"sim_50_25"</span>,<span class="op">]</span><span class="op">$</span><span class="va">F_value</span>
 <span class="va">sorted_Fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">Fs</span><span class="op">)</span>
 <span class="va">sorted_Fs</span><span class="op">[</span><span class="fl">950</span><span class="op">]</span>
-<span class="co">#&gt; [1] 3.126807</span>
+<span class="co">#&gt; [1] 3.451418</span>
 
 <span class="va">Fs</span> <span class="op">&lt;-</span> <span class="va">F_comparison</span><span class="op">[</span><span class="va">F_comparison</span><span class="op">$</span><span class="va">type</span><span class="op">==</span><span class="st">"sim_bimodal"</span>,<span class="op">]</span><span class="op">$</span><span class="va">F_value</span>
 <span class="va">sorted_Fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">Fs</span><span class="op">)</span>
 <span class="va">sorted_Fs</span><span class="op">[</span><span class="fl">950</span><span class="op">]</span>
-<span class="co">#&gt; [1] 3.793032</span></code></pre></div>
+<span class="co">#&gt; [1] 3.664058</span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">levels</span> <span class="op">&lt;-</span> <span class="fl">4</span>
 <span class="va">n_per_level</span> <span class="op">&lt;-</span> <span class="fl">5</span>
@@ -417,7 +417,7 @@
 <p><img src="Lab5a_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">save_F_values</span><span class="op">[</span><span class="va">save_F_values</span><span class="op">&gt;</span><span class="fl">7.407</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">1000</span>
-<span class="co">#&gt; [1] 0</span></code></pre></div>
+<span class="co">#&gt; [1] 0.001</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="simulating-the-alternative-hypothesis">Simulating the alternative hypothesis<a class="anchor" aria-label="anchor" href="#simulating-the-alternative-hypothesis"></a>
@@ -463,7 +463,7 @@
 <span class="co">#&gt; [1] 3.238872</span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">save_altF_values</span><span class="op">[</span><span class="va">save_altF_values</span> <span class="op">&gt;</span> <span class="fl">3.23</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt; [1] 297</span></code></pre></div>
+<span class="co">#&gt; [1] 271</span></code></pre></div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">n_per_level</span> <span class="op">&lt;-</span> <span class="fl">50</span>
 
@@ -517,7 +517,7 @@
 <span class="op">}</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">save_altF_values</span><span class="op">[</span><span class="va">save_altF_values</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">qf</a></span><span class="op">(</span><span class="fl">.95</span>,<span class="fl">3</span>,<span class="op">(</span><span class="va">n_per_level</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span><span class="op">-</span><span class="fl">4</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">1000</span>
-<span class="co">#&gt; [1] 0.951</span></code></pre></div>
+<span class="co">#&gt; [1] 0.958</span></code></pre></div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">num_subjects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">10</span>,<span class="fl">15</span>,<span class="fl">20</span>,<span class="fl">25</span>,<span class="fl">30</span><span class="op">)</span>
@@ -558,27 +558,27 @@
 <tbody>
 <tr class="odd">
 <td align="right">5</td>
-<td align="right">0.287</td>
+<td align="right">0.285</td>
 </tr>
 <tr class="even">
 <td align="right">10</td>
-<td align="right">0.586</td>
+<td align="right">0.579</td>
 </tr>
 <tr class="odd">
 <td align="right">15</td>
-<td align="right">0.788</td>
+<td align="right">0.803</td>
 </tr>
 <tr class="even">
 <td align="right">20</td>
-<td align="right">0.903</td>
+<td align="right">0.905</td>
 </tr>
 <tr class="odd">
 <td align="right">25</td>
-<td align="right">0.957</td>
+<td align="right">0.962</td>
 </tr>
 <tr class="even">
 <td align="right">30</td>
-<td align="right">0.987</td>
+<td align="right">0.981</td>
 </tr>
 </tbody>
 </table>
@@ -628,35 +628,35 @@
 <tbody>
 <tr class="odd">
 <td align="right">10</td>
-<td align="right">0.109</td>
+<td align="right">0.115</td>
 </tr>
 <tr class="even">
 <td align="right">50</td>
-<td align="right">0.476</td>
+<td align="right">0.445</td>
 </tr>
 <tr class="odd">
 <td align="right">75</td>
-<td align="right">0.564</td>
+<td align="right">0.601</td>
 </tr>
 <tr class="even">
 <td align="right">100</td>
-<td align="right">0.663</td>
+<td align="right">0.679</td>
 </tr>
 <tr class="odd">
 <td align="right">125</td>
-<td align="right">0.728</td>
+<td align="right">0.707</td>
 </tr>
 <tr class="even">
 <td align="right">150</td>
-<td align="right">0.768</td>
+<td align="right">0.754</td>
 </tr>
 <tr class="odd">
 <td align="right">175</td>
-<td align="right">0.809</td>
+<td align="right">0.812</td>
 </tr>
 <tr class="even">
 <td align="right">200</td>
-<td align="right">0.826</td>
+<td align="right">0.836</td>
 </tr>
 </tbody>
 </table>

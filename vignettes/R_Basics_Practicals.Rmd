@@ -42,8 +42,8 @@ average_congruent
 ## List (utility exemplified with ice cream review example)
 ```{r}
 
-names(bnj) <- c("flavor", "tastyrating", "creamyrating", "pricing")
 bnj <- list("phishfood", 7, 4, "med")
+names(bnj) <- c("flavor", "tastyrating", "creamyrating", "pricing")
 
 hagendaaz <- list("vanilla", 6, 9, "high")
 names(hagendaaz) <- c("flavor", "tastyrating", "creamyrating", "pricing")
@@ -175,7 +175,7 @@ frequency_range
 mean(frequency_table$Frequencies)
 ```
 ```{r}
-hist(a)
+hist(freq)
 ```
 ### The mean is close to most values in the dataset, the range is quite small (<10% of most values), and the histogram is quite flat (although, inexplicably, the random number generator does indeed seems to be biased away from selecting the number 100, specifically). I considered running a one-sample T-Test, but it occurred to me that the process of identifying the null hypothesis population mean would require circular reasoning, and this question only required a descriptive characterization of the distribution. 
 

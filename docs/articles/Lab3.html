@@ -89,7 +89,10 @@
       <a href="../articles/Lab9_RMAnova.html">Lab9_RMAnova</a>
     </li>
     <li>
-      <a href="../articles/Practicals_for_Final.html">Practicals_for_Final</a>
+      <a href="../articles/R_Basics_Practicals.html">Practicals_for_Final</a>
+    </li>
+    <li>
+      <a href="../articles/slide_deck.html">Intro to Immuno Analyze</a>
     </li>
   </ul>
 </li>
@@ -179,12 +182,12 @@
 <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">joint_health_data</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ibd"</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
-<span class="co">#  Installing package into 'C:/Users/m3gad/AppData/Local/Temp/Rtmpg39MT7/temp_libpath5d4c292f7abb'</span>
+<span class="co">#  Installing package into 'C:/Users/m3gad/AppData/Local/Temp/RtmpYTCYnG/temp_libpath910814f9cad'</span>
 <span class="co">#  (as 'lib' is unspecified)</span>
 <span class="co">#  package 'ibd' successfully unpacked and MD5 sums checked</span>
 <span class="co">#  </span>
 <span class="co">#  The downloaded binary packages are in</span>
-<span class="co">#   C:\Users\m3gad\AppData\Local\Temp\RtmpkZm6wk\downloaded_packages</span>
+<span class="co">#   C:\Users\m3gad\AppData\Local\Temp\Rtmpkx4EVG\downloaded_packages</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ibd</span><span class="op">)</span>
 <span class="co">#  Warning: package 'ibd' was built under R version 4.1.3</span>
 <span class="fu"><a href="https://rdrr.io/pkg/ibd/man/check.orthogonality.html" class="external-link">check.orthogonality</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
@@ -217,50 +220,52 @@
 <span class="co">#  lm(formula = a ~ b, data = random_vectors)</span>
 <span class="co">#  </span>
 <span class="co">#  Residuals:</span>
-<span class="co">#       Min       1Q   Median       3Q      Max </span>
-<span class="co">#  -1.80713 -0.70672 -0.00656  0.80935  1.64607 </span>
+<span class="co">#      Min      1Q  Median      3Q     Max </span>
+<span class="co">#  -1.5591 -0.3714  0.1507  0.4232  1.2329 </span>
 <span class="co">#  </span>
 <span class="co">#  Coefficients:</span>
-<span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)</span>
-<span class="co">#  (Intercept)   0.2074     0.2295   0.904    0.378</span>
-<span class="co">#  b            -0.1216     0.2471  -0.492    0.629</span>
+<span class="co">#                Estimate Std. Error t value Pr(&gt;|t|)  </span>
+<span class="co">#  (Intercept) -0.0009447  0.1613541  -0.006   0.9954  </span>
+<span class="co">#  b            0.3036138  0.1391627   2.182   0.0426 *</span>
+<span class="co">#  ---</span>
+<span class="co">#  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co">#  </span>
-<span class="co">#  Residual standard error: 1.018 on 18 degrees of freedom</span>
-<span class="co">#  Multiple R-squared:  0.01327,    Adjusted R-squared:  -0.04155 </span>
-<span class="co">#  F-statistic: 0.2421 on 1 and 18 DF,  p-value: 0.6286</span>
+<span class="co">#  Residual standard error: 0.7214 on 18 degrees of freedom</span>
+<span class="co">#  Multiple R-squared:  0.2091, Adjusted R-squared:  0.1652 </span>
+<span class="co">#  F-statistic:  4.76 on 1 and 18 DF,  p-value: 0.04263</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.01327268</span>
+<span class="co">#  [1] 0.2091352</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.01327268</span>
+<span class="co">#  [1] 0.2091352</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.01714392</span>
+<span class="co">#  [1] 0.5202001</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span><span class="op">+</span><span class="va">d</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.1578308</span>
+<span class="co">#  [1] 0.5277262</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span><span class="op">+</span><span class="va">d</span><span class="op">+</span><span class="va">e</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.3090475</span>
+<span class="co">#  [1] 0.5544672</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span><span class="op">+</span><span class="va">d</span><span class="op">+</span><span class="va">e</span><span class="op">+</span><span class="va">f</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.4334414</span>
+<span class="co">#  [1] 0.5661637</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span><span class="op">+</span><span class="va">d</span><span class="op">+</span><span class="va">e</span><span class="op">+</span><span class="va">f</span><span class="op">+</span><span class="va">g</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.4371287</span>
+<span class="co">#  [1] 0.566285</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">+</span><span class="va">c</span><span class="op">+</span><span class="va">d</span><span class="op">+</span><span class="va">e</span><span class="op">+</span><span class="va">f</span><span class="op">+</span><span class="va">g</span><span class="op">+</span><span class="va">h</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.6946921</span>
+<span class="co">#  [1] 0.6145275</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">*</span><span class="va">c</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.1582425</span>
+<span class="co">#  [1] 0.5444478</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">*</span><span class="va">c</span><span class="op">*</span><span class="va">d</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.4052551</span>
+<span class="co">#  [1] 0.6192317</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">*</span><span class="va">c</span><span class="op">*</span><span class="va">d</span><span class="op">*</span><span class="va">e</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
-<span class="co">#  [1] 0.8795055</span>
+<span class="co">#  [1] 0.8422464</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">*</span><span class="va">c</span><span class="op">*</span><span class="va">d</span><span class="op">*</span><span class="va">e</span><span class="op">*</span><span class="va">f</span>,data<span class="op">=</span><span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r.squared</span>
 <span class="co">#  [1] 1</span>
@@ -271,37 +276,35 @@
 <span class="co">#  lm(formula = a ~ b * c * d * e, data = random_vectors)</span>
 <span class="co">#  </span>
 <span class="co">#  Residuals:</span>
-<span class="co">#         1        2        3        4        5        6        7        8 </span>
-<span class="co">#   0.18638 -0.04916 -0.50200 -0.87021 -0.19854  0.25771 -0.08564 -0.15754 </span>
-<span class="co">#         9       10       11       12       13       14       15       16 </span>
-<span class="co">#   0.06955  0.22378 -0.32787  0.02737 -0.17250  0.02537  0.46728  0.04770 </span>
-<span class="co">#        17       18       19       20 </span>
-<span class="co">#   0.73561  0.04549 -0.08397  0.36121 </span>
+<span class="co">#          1         2         3         4         5         6         7         8 </span>
+<span class="co">#  -0.051331  0.682555  0.102556 -0.137675 -0.311679 -0.253395  0.227166  0.155767 </span>
+<span class="co">#          9        10        11        12        13        14        15        16 </span>
+<span class="co">#  -0.180134  0.410832 -0.245543 -0.104506  0.246098 -0.024661  0.005951  0.180427 </span>
+<span class="co">#         17        18        19        20 </span>
+<span class="co">#  -0.261731 -0.792105  0.106286  0.245119 </span>
 <span class="co">#  </span>
 <span class="co">#  Coefficients:</span>
-<span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)  </span>
-<span class="co">#  (Intercept)   1.9050     0.6312   3.018   0.0392 *</span>
-<span class="co">#  b            -0.4111     0.8396  -0.490   0.6500  </span>
-<span class="co">#  c             2.5370     1.2470   2.034   0.1116  </span>
-<span class="co">#  d            -1.1988     1.0924  -1.097   0.3341  </span>
-<span class="co">#  e             2.1477     0.9371   2.292   0.0837 .</span>
-<span class="co">#  b:c          -5.1078     2.0454  -2.497   0.0670 .</span>
-<span class="co">#  b:d           1.3024     0.6602   1.973   0.1198  </span>
-<span class="co">#  c:d          -6.7314     3.1155  -2.161   0.0968 .</span>
-<span class="co">#  b:e          -0.7312     2.0001  -0.366   0.7332  </span>
-<span class="co">#  c:e           2.2696     1.7144   1.324   0.2562  </span>
-<span class="co">#  d:e          -2.8337     1.7157  -1.652   0.1740  </span>
-<span class="co">#  b:c:d         3.1755     2.6955   1.178   0.3041  </span>
-<span class="co">#  b:c:e        -6.2315     3.4290  -1.817   0.1433  </span>
-<span class="co">#  b:d:e         1.6807     1.4376   1.169   0.3073  </span>
-<span class="co">#  c:d:e        -8.5954     3.0178  -2.848   0.0465 *</span>
-<span class="co">#  b:c:d:e       2.5768     5.0176   0.514   0.6346  </span>
-<span class="co">#  ---</span>
-<span class="co">#  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)</span>
+<span class="co">#  (Intercept)  0.17113    0.53658   0.319    0.766</span>
+<span class="co">#  b            0.47333    0.66412   0.713    0.515</span>
+<span class="co">#  c            0.05158    0.49687   0.104    0.922</span>
+<span class="co">#  d           -0.06507    0.50760  -0.128    0.904</span>
+<span class="co">#  e           -1.10672    0.97445  -1.136    0.319</span>
+<span class="co">#  b:c          0.20410    0.45152   0.452    0.675</span>
+<span class="co">#  b:d         -0.84636    0.68136  -1.242    0.282</span>
+<span class="co">#  c:d         -0.64672    0.66172  -0.977    0.384</span>
+<span class="co">#  b:e          1.14700    0.95654   1.199    0.297</span>
+<span class="co">#  c:e          0.75879    0.74775   1.015    0.368</span>
+<span class="co">#  d:e          0.82392    1.02619   0.803    0.467</span>
+<span class="co">#  b:c:d        0.72949    0.48554   1.502    0.207</span>
+<span class="co">#  b:c:e       -1.05135    0.68255  -1.540    0.198</span>
+<span class="co">#  b:d:e       -0.65984    0.98311  -0.671    0.539</span>
+<span class="co">#  c:d:e        0.23317    0.69856   0.334    0.755</span>
+<span class="co">#  b:c:d:e      1.11387    0.98199   1.134    0.320</span>
 <span class="co">#  </span>
-<span class="co">#  Residual standard error: 0.7549 on 4 degrees of freedom</span>
-<span class="co">#  Multiple R-squared:  0.8795, Adjusted R-squared:  0.4277 </span>
-<span class="co">#  F-statistic: 1.946 on 15 and 4 DF,  p-value: 0.2732</span>
+<span class="co">#  Residual standard error: 0.6835 on 4 degrees of freedom</span>
+<span class="co">#  Multiple R-squared:  0.8422, Adjusted R-squared:  0.2507 </span>
+<span class="co">#  F-statistic: 1.424 on 15 and 4 DF,  p-value: 0.3976</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">a</span><span class="op">~</span><span class="va">b</span><span class="op">*</span><span class="va">c</span><span class="op">*</span><span class="va">d</span><span class="op">*</span><span class="va">e</span><span class="op">*</span><span class="va">f</span>, data <span class="op">=</span> <span class="va">random_vectors</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#  </span>
@@ -313,26 +316,26 @@
 <span class="co">#  </span>
 <span class="co">#  Coefficients: (12 not defined because of singularities)</span>
 <span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)</span>
-<span class="co">#  (Intercept)   6.1076        NaN     NaN      NaN</span>
-<span class="co">#  b            20.6918        NaN     NaN      NaN</span>
-<span class="co">#  c            10.3614        NaN     NaN      NaN</span>
-<span class="co">#  d            13.5567        NaN     NaN      NaN</span>
-<span class="co">#  e             6.0020        NaN     NaN      NaN</span>
-<span class="co">#  f             8.7771        NaN     NaN      NaN</span>
-<span class="co">#  b:c         -38.0494        NaN     NaN      NaN</span>
-<span class="co">#  b:d           9.5408        NaN     NaN      NaN</span>
-<span class="co">#  c:d         -52.4767        NaN     NaN      NaN</span>
-<span class="co">#  b:e           6.8853        NaN     NaN      NaN</span>
-<span class="co">#  c:e           0.4095        NaN     NaN      NaN</span>
-<span class="co">#  d:e          12.5837        NaN     NaN      NaN</span>
-<span class="co">#  b:f          17.6429        NaN     NaN      NaN</span>
-<span class="co">#  c:f         -12.1208        NaN     NaN      NaN</span>
-<span class="co">#  d:f           8.1224        NaN     NaN      NaN</span>
-<span class="co">#  e:f          -1.6585        NaN     NaN      NaN</span>
-<span class="co">#  b:c:d        27.0778        NaN     NaN      NaN</span>
-<span class="co">#  b:c:e       -51.5225        NaN     NaN      NaN</span>
-<span class="co">#  b:d:e        18.3876        NaN     NaN      NaN</span>
-<span class="co">#  c:d:e       -47.6668        NaN     NaN      NaN</span>
+<span class="co">#  (Intercept)  0.86787        NaN     NaN      NaN</span>
+<span class="co">#  b            0.11240        NaN     NaN      NaN</span>
+<span class="co">#  c           -1.61958        NaN     NaN      NaN</span>
+<span class="co">#  d           -0.34797        NaN     NaN      NaN</span>
+<span class="co">#  e           -1.09204        NaN     NaN      NaN</span>
+<span class="co">#  f            0.04094        NaN     NaN      NaN</span>
+<span class="co">#  b:c         -0.34590        NaN     NaN      NaN</span>
+<span class="co">#  b:d         -2.07786        NaN     NaN      NaN</span>
+<span class="co">#  c:d         -0.43286        NaN     NaN      NaN</span>
+<span class="co">#  b:e         -0.19417        NaN     NaN      NaN</span>
+<span class="co">#  c:e          0.48141        NaN     NaN      NaN</span>
+<span class="co">#  d:e          1.31099        NaN     NaN      NaN</span>
+<span class="co">#  b:f          0.14207        NaN     NaN      NaN</span>
+<span class="co">#  c:f          2.10177        NaN     NaN      NaN</span>
+<span class="co">#  d:f          0.91908        NaN     NaN      NaN</span>
+<span class="co">#  e:f          0.25502        NaN     NaN      NaN</span>
+<span class="co">#  b:c:d        1.54866        NaN     NaN      NaN</span>
+<span class="co">#  b:c:e       -1.14387        NaN     NaN      NaN</span>
+<span class="co">#  b:d:e       -0.97306        NaN     NaN      NaN</span>
+<span class="co">#  c:d:e        0.12090        NaN     NaN      NaN</span>
 <span class="co">#  b:c:f             NA         NA      NA       NA</span>
 <span class="co">#  b:d:f             NA         NA      NA       NA</span>
 <span class="co">#  c:d:f             NA         NA      NA       NA</span>
@@ -549,12 +552,12 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"lm"</span>,se<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"patchwork"</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span>
-<span class="co">#  Installing package into 'C:/Users/m3gad/AppData/Local/Temp/Rtmpg39MT7/temp_libpath5d4c292f7abb'</span>
+<span class="co">#  Installing package into 'C:/Users/m3gad/AppData/Local/Temp/RtmpYTCYnG/temp_libpath910814f9cad'</span>
 <span class="co">#  (as 'lib' is unspecified)</span>
 <span class="co">#  package 'patchwork' successfully unpacked and MD5 sums checked</span>
 <span class="co">#  </span>
 <span class="co">#  The downloaded binary packages are in</span>
-<span class="co">#   C:\Users\m3gad\AppData\Local\Temp\RtmpkZm6wk\downloaded_packages</span>
+<span class="co">#   C:\Users\m3gad\AppData\Local\Temp\Rtmpkx4EVG\downloaded_packages</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span>
 <span class="co">#  Warning: package 'patchwork' was built under R version 4.1.3</span>
 

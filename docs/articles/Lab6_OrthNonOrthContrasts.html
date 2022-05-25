@@ -89,7 +89,10 @@
       <a href="../articles/Lab9_RMAnova.html">Lab9_RMAnova</a>
     </li>
     <li>
-      <a href="../articles/Practicals_for_Final.html">Practicals_for_Final</a>
+      <a href="../articles/R_Basics_Practicals.html">Practicals_for_Final</a>
+    </li>
+    <li>
+      <a href="../articles/slide_deck.html">Intro to Immuno Analyze</a>
     </li>
   </ul>
 </li>
@@ -144,11 +147,11 @@
 
 <span class="va">binom_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">1</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">binom_data</span><span class="op">[</span><span class="va">binom_data</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">10000</span>
-<span class="co">#&gt; [1] 0.6509</span>
+<span class="co">#&gt; [1] 0.6364</span>
 
 <span class="va">binom_data2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">1</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">binom_data2</span><span class="op">[</span><span class="va">binom_data2</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">10000</span>
-<span class="co">#&gt; [1] 0.9299</span>
+<span class="co">#&gt; [1] 0.9213</span>
 
 <span class="co">### I understood how to construct the first term, defining the experiments in this case "binom_data," but the actual "check" part using the "length" function was a grammar I was not too familiar with and needed to consult the solutions video for. 70%</span></code></pre></div>
 </div>
@@ -159,7 +162,7 @@
 <code class="sourceCode R"><span class="va">dataB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">3</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dataB</span><span class="op">[</span><span class="va">dataB</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="fl">10000</span>
-<span class="co">#&gt; [1] 0.9523</span>
+<span class="co">#&gt; [1] 0.9518</span>
 
 <span class="co">### I ended up trying to go waaay too deep here with the aov and tibble functions- when the row/column mismatches seemed to obfuscate any interprable results, I realized I should just check the solutions video, realizing it was way simpler than I thought. 0%</span></code></pre></div>
 </div>
@@ -279,9 +282,9 @@
 <span class="va">sigPa</span> <span class="op">==</span> <span class="va">sigPb</span>
 <span class="co">#&gt; [1] FALSE</span>
 <span class="va">sigPa</span> <span class="op">&gt;</span> <span class="va">sigPb</span>
-<span class="co">#&gt; [1] FALSE</span>
-<span class="va">sigPa</span> <span class="op">&lt;</span> <span class="va">sigPb</span>
 <span class="co">#&gt; [1] TRUE</span>
+<span class="va">sigPa</span> <span class="op">&lt;</span> <span class="va">sigPb</span>
+<span class="co">#&gt; [1] FALSE</span>
 
 <span class="co">### I'd initially had the whole thing put there twice. The thing I was missing was that the code in line 138 could be duplicated just so that I extract the omnibus separately from the same analysis. Maybe 70%. </span>
 
@@ -606,16 +609,14 @@
                                                 <span class="st">"c4"</span><span class="op">=</span> <span class="fl">4</span>,
                                                 <span class="st">"c5"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
                                         <span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;              Df Sum Sq Mean Sq F value Pr(&gt;F)  </span>
-<span class="co">#&gt; IV            5    5.6   1.123   1.163 0.3259  </span>
-<span class="co">#&gt;   IV: c1      1    0.2   0.218   0.226 0.6346  </span>
-<span class="co">#&gt;   IV: c2      1    3.2   3.178   3.291 0.0701 .</span>
-<span class="co">#&gt;   IV: c3      1    1.6   1.557   1.613 0.2046  </span>
-<span class="co">#&gt;   IV: c4      1    0.7   0.659   0.682 0.4092  </span>
-<span class="co">#&gt;   IV: c5      1    0.0   0.003   0.004 0.9524  </span>
-<span class="co">#&gt; Residuals   594  573.6   0.966                 </span>
-<span class="co">#&gt; ---</span>
-<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
+<span class="co">#&gt;              Df Sum Sq Mean Sq F value Pr(&gt;F)</span>
+<span class="co">#&gt; IV            5    0.7  0.1469   0.155  0.979</span>
+<span class="co">#&gt;   IV: c1      1    0.1  0.0686   0.072  0.788</span>
+<span class="co">#&gt;   IV: c2      1    0.0  0.0217   0.023  0.880</span>
+<span class="co">#&gt;   IV: c3      1    0.5  0.4532   0.478  0.490</span>
+<span class="co">#&gt;   IV: c4      1    0.2  0.1683   0.178  0.674</span>
+<span class="co">#&gt;   IV: c5      1    0.0  0.0224   0.024  0.878</span>
+<span class="co">#&gt; Residuals   594  563.2  0.9482</span></code></pre></div>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">all_sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span><span class="op">)</span>
 
@@ -664,17 +665,17 @@
 <tr class="even">
 <td align="left">contrast</td>
 <td align="right">1</td>
-<td align="right">2055</td>
+<td align="right">2048</td>
 </tr>
 <tr class="odd">
 <td align="left">contrast</td>
 <td align="right">2</td>
-<td align="right">406</td>
+<td align="right">428</td>
 </tr>
 <tr class="even">
 <td align="left">contrast</td>
 <td align="right">3</td>
-<td align="right">27</td>
+<td align="right">42</td>
 </tr>
 <tr class="odd">
 <td align="left">omnibus</td>
@@ -684,7 +685,7 @@
 <tr class="even">
 <td align="left">omnibus</td>
 <td align="right">1</td>
-<td align="right">459</td>
+<td align="right">512</td>
 </tr>
 </tbody>
 </table>
@@ -693,21 +694,21 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">'omnibus'</span>,
          <span class="va">counts</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">type_I_frequency</span><span class="op">)</span><span class="op">/</span><span class="fl">10000</span>
-<span class="co">#&gt; [1] 0.0459</span></code></pre></div>
+<span class="co">#&gt; [1] 0.0512</span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">type_I_errors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">'contrast'</span>,
          <span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">type_I_frequency</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">)</span><span class="op">/</span><span class="fl">50000</span>
-<span class="co">#&gt; [1] 0.04976</span></code></pre></div>
+<span class="co">#&gt; [1] 0.05036</span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">type_I_errors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">'contrast'</span>,
          <span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">type_I_frequency</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">)</span><span class="op">/</span><span class="fl">10000</span>
-<span class="co">#&gt; [1] 0.2488</span></code></pre></div>
+<span class="co">#&gt; [1] 0.2518</span></code></pre></div>
 <div class="section level4">
 <h4 id="correcting-for-multiple-comparisons">Correcting for multiple comparisons<a class="anchor" aria-label="anchor" href="#correcting-for-multiple-comparisons"></a>
 </h4>

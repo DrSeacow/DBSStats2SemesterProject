@@ -4,49 +4,55 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/articles/About.html</loc>
+    <loc>/About/About.html</loc>
   </url>
   <url>
-    <loc>/articles/Aboutreviews.html</loc>
+    <loc>/Articles/About.html</loc>
   </url>
   <url>
-    <loc>/articles/Final_Lab_WYOR.html</loc>
+    <loc>/Articles/Aboutreviews.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>/Articles/Final_Lab_WYOR.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab1.html</loc>
+    <loc>/Articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab10_NestedDesigns.html</loc>
+    <loc>/Articles/Lab1.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab2.html</loc>
+    <loc>/Articles/Lab10_NestedDesigns.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab3.html</loc>
+    <loc>/Articles/Lab2.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab4_ANOVA.html</loc>
+    <loc>/Articles/Lab3.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab5a.html</loc>
+    <loc>/Articles/Lab4_ANOVA.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab6_OrthNonOrthContrasts.html</loc>
+    <loc>/Articles/Lab5a.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab7_FactorialAnova.html</loc>
+    <loc>/Articles/Lab6_OrthNonOrthContrasts.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab8_FactorialAnova_Pt2_w_Contrasts.html</loc>
+    <loc>/Articles/Lab7_FactorialAnova.html</loc>
   </url>
   <url>
-    <loc>/articles/Lab9_RMAnova.html</loc>
+    <loc>/Articles/Lab8_FactorialAnova_Pt2_w_Contrasts.html</loc>
   </url>
   <url>
-    <loc>/articles/Practicals_for_Final.html</loc>
+    <loc>/Articles/Lab9_RMAnova.html</loc>
+  </url>
+  <url>
+    <loc>/Articles/R_Basics_Practicals.html</loc>
+  </url>
+  <url>
+    <loc>/Articles/slide_deck.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
@@ -77,5 +83,8 @@
   </url>
   <url>
     <loc>/reference/percent.area.plane.html</loc>
+  </url>
+  <url>
+    <loc>/R_Basics/R_Basics_Practicals.html</loc>
   </url>
 </urlset>

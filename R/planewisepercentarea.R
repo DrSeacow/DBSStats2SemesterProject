@@ -25,7 +25,7 @@
 #' @param n_per_group How many subjects are included in each group. Used to compute standard error of the mean for error bars on barplot.
 #' @param x The name of your .CSV file.
 #' @return A three-item vector containing the P-Values for unpaired-samples T-Tests between groups at each level of the second factor (plane of tissue), as well as three side-by-side plots corresponding to each comparison.
-#' @examples percent.area.plane("percent_ps6_BLA_ant", "med", "pos", "percent", "Ctrl", "Switch", 6, data = "percent_ps6_BLA.csv")
+#' @examples immuno.analyze::percent.area.plane("percent_ps6_BLA_ant", "med", "pos", "percent", "Ctrl", "Switch", 6, data = "percent_ps6_BLA.csv")
 #'
 #' @references Timothy, M., & Forlano, P. M. (2019). A versatile macro-based neurohistological image analysis suite for ImageJ focused on automated and standardized user interaction and reproducible data output. Journal of neuroscience methods, 324, 108286. https://doi.org/10.1016/j.jneumeth.2019.04.009
 

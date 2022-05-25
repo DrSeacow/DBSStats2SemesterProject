@@ -1,0 +1,20 @@
+pandoc: 2.14.0.3
+pkgdown: 2.0.3
+pkgdown_sha: ~
+articles:
+  Final_Lab_WYOR: Final_Lab_WYOR.html
+  Lab1: Lab1.html
+  Lab10_NestedDesigns: Lab10_NestedDesigns.html
+  Lab2: Lab2.html
+  Lab3: Lab3.html
+  Lab4_ANOVA: Lab4_ANOVA.html
+  Lab5a: Lab5a.html
+  Lab6_OrthNonOrthContrasts: Lab6_OrthNonOrthContrasts.html
+  Lab7_FactorialAnova: Lab7_FactorialAnova.html
+  Lab8_FactorialAnova_Pt2_w_Contrasts: Lab8_FactorialAnova_Pt2_w_Contrasts.html
+  Lab9_RMAnova: Lab9_RMAnova.html
+  Practicals_for_Final: Practicals_for_Final.html
+  About: About.html
+  Aboutreviews: Aboutreviews.html
+last_built: 2022-05-24T21:24Z
+

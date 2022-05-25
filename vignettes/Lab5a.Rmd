@@ -1,0 +1,475 @@
+---
+title: "Lab5a"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab5a}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+## Generalization Assignment
+
+### Q1 - Simulated Data with an F smaller than the critical value
+
+```{r}
+library(tibble)
+
+levels <- 3
+n_per_level <- 10
+
+F_crit <- qf(0.95, 2, 27)
+F_crit
+
+for(i in 1:1000){
+random_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = rnorm(levels*n_per_level, 0, 1)
+                      )
+
+F_crit <- qf(0.95, 2, 27)
+F_crit
+
+aov.out <- aov(DV ~ IV, data = random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+if(simulated_F < F_crit) break
+}
+
+summary(aov.out)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(random_data, aes(x = IV, y = DV))+
+  geom_bar(stat = "summary", fun = "mean")+
+  geom_point()
+```
+
+```{r}
+i
+```
+
+### We would fail to reject the null hypothesis in this scenario, as- by design- the simulated F is below the critical F. Given the way this simulation is structured, we can be at least 95% confident (although this is a somewhat loaded way to phrase it) that this was the correct decision.
+
+### Q2 - Simulated data that is above the critical value
+```{r}
+library(tibble)
+
+levels <- 3
+n_per_level <- 10
+
+F_crit <- qf(0.95, 2, 27)
+F_crit
+
+for(i in 1:1000){
+random_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = rnorm(levels*n_per_level, 0, 1)
+                      )
+
+F_crit <- qf(0.95, 2, 27)
+F_crit
+
+aov.out <- aov(DV ~ IV, data = random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+if(simulated_F > F_crit) break
+}
+
+summary(aov.out)
+```
+```{r}
+i
+```
+### By design, we would reject the null hypothesis as the simulated F value here is greater than the critical F value. We would have 95% certainty that this was the correct decision. However, we know for a fact that this falls in the unfortunate 5% error range, as the data is randomly simulated and we have simply designed it to tell us whenever it gives us a lucky fraudulent F (so it would be the incorrect decision).
+
+```{r}
+library(ggplot2)
+
+ggplot(random_data, aes(x = IV, y = DV))+
+  geom_bar(stat = "summary", fun = "mean")+
+  geom_point()
+```
+
+### Q3 - "Breaking" the assumptions of the normal distribution in the ANOVA
+
+```{r}
+save_F_values <- length(1000)
+for(i in 1:1000){
+  random_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = rnorm(levels*n_per_level) / rt(levels*n_per_level, 1, 1)
+                        )
+  aov.out <- aov(DV ~ IV, data = random_data)
+  simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+  save_F_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("analytic","simulated"), each = 1000), 
+                        F_value = c(rf(1000, levels - 1, (levels*n_per_level)),save_F_values))
+
+ggplot(F_comparison, aes(x=F_value, color = type))+
+  geom_freqpoly(bins = 50)
+```
+
+## Struggle-report: I'm sorry Matt, I admittedly needed profuse consultation of your solutions video on this one. I tried to do something a little different with Q3 and I basically did, although I followed the suggestion regarding the T-distribution. For Q1 and 2, I figured out what I needed to copy/paste and modify but couldn't figure out how to modify it (at least, without breaking the whole thing) without consulting the video. 
+
+## Follow-along with class exercise
+
+```{r}
+someFs <- rf(1000,3,16)
+hist(someFs)
+```
+
+```{r}
+pf(4, 3, 16, lower.tail = FALSE)
+```
+
+```{r}
+
+library(tibble)
+
+levels <- 4
+n_per_level <- 5
+
+random_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = rnorm(levels*n_per_level, 0, 1)
+                      )
+
+aov.out <- aov(DV ~ IV, data = random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+
+save_F_values <- length(1000)
+for(i in 1:1000){
+random_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = rnorm(levels*n_per_level, 0, 1)
+                      )
+aov.out <- aov(DV ~ IV, data = random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+save_F_values[i] <- simulated_F
+}
+
+```
+
+```{r}
+library(ggplot2)
+
+F_comparison <- tibble(type = rep(c("analytic","simulated"), each = 1000), 
+                        F_value = c(rf(1000,3,16),save_F_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram()+
+  facet_wrap(~type)
+```
+
+```{r}
+save_new_F_values <- length(1000)
+for(i in 1:1000){
+random_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = rnorm(levels*n_per_level, 50, 25)
+                      )
+aov.out <- aov(DV ~ IV, data = random_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+save_new_F_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("analytic","sim_0_1","sim_50_25"), each = 1000), 
+                        F_value = c(rf(1000,3,16),save_F_values, save_new_F_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram()+
+  facet_wrap(~type)
+```
+
+```{r}
+hist(sample(c(rnorm(levels*n_per_level/2,0,1),rnorm(levels*n_per_level/2,5,1))))
+```
+
+```{r}
+
+save_bimodal_F_values <- length(1000)
+for(i in 1:1000){
+
+  random_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = sample(c(rnorm(levels*n_per_level/2,0,1),
+                                      rnorm(levels*n_per_level/2,5,1)))
+                        )
+  aov.out <- aov(DV ~ IV, data = random_data)
+  simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+  save_bimodal_F_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("analytic","sim_0_1","sim_50_25", "sim_bimodal"), each = 1000), 
+                        F_value = c(rf(1000,3,16),save_F_values, save_new_F_values,save_bimodal_F_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram(bins=100)+
+  facet_wrap(~type)
+```
+
+```{r}
+qf(.95,3,16)
+```
+
+```{r}
+library(dplyr)
+
+Fs <- F_comparison[F_comparison$type=="analytic",]$F_value
+sorted_Fs <- sort(Fs)
+sorted_Fs[950]
+
+Fs <- F_comparison[F_comparison$type=="sim_0_1",]$F_value
+sorted_Fs <- sort(Fs)
+sorted_Fs[950]
+
+Fs <- F_comparison[F_comparison$type=="sim_50_25",]$F_value
+sorted_Fs <- sort(Fs)
+sorted_Fs[950]
+
+Fs <- F_comparison[F_comparison$type=="sim_bimodal",]$F_value
+sorted_Fs <- sort(Fs)
+sorted_Fs[950]
+```
+
+```{r}
+levels <- 4
+n_per_level <- 5
+
+some_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = c(11,12,11,11,12,
+                             10,8,10,9,10,
+                             8,9,10,10,10,
+                             10,8,10,9,10
+                             )
+                      )
+
+aov.out <- aov(DV ~ IV, data = some_data)
+summary(aov.out)
+```
+
+```{r}
+save_F_values <- length(1000)
+for(i in 1:1000){
+  some_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = sample(c(11,12,11,11,12,
+                               10,8,10,9,10,
+                               8,9,10,10,10,
+                               10,8,10,9,10
+                               ))
+                        )
+  aov.out <- aov(DV ~ IV, data =some_data)
+  simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+  save_F_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("analytic","randomization"), each = 1000), 
+                        F_value = c(rf(1000,3,16),save_F_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram()+
+  facet_wrap(~type)
+```
+
+```{r}
+length(save_F_values[save_F_values>7.407])/1000
+```
+## Simulating the alternative hypothesis
+```{r}
+
+levels <- 4
+n_per_level <- 5
+
+alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = c(rnorm(n_per_level, 125, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25)
+                             )
+                      )
+
+save_altF_values <- length(1000)
+for(i in 1:1000){
+alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = c(rnorm(n_per_level, 125, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25)
+                             )
+                      )
+aov.out <- aov(DV ~ IV, data = alternative_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+save_altF_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("null","alternative"), each = 1000), 
+                        F_value = c(rf(1000,3,16),save_altF_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram(bins=100)+
+  facet_wrap(~type, nrow=2)
+```
+
+```{r}
+qf(.95,3,16)
+```
+
+```{r}
+length(save_altF_values[save_altF_values > 3.23])
+```
+
+```{r}
+n_per_level <- 50
+
+# repeat the above many times to compute the F-distribution
+save_altF_values <- length(1000)
+for(i in 1:1000){
+alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                      IV = as.factor(rep(1:levels, each = n_per_level)),
+                      DV = c(rnorm(n_per_level, 125, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25),
+                             rnorm(n_per_level, 100, 25)
+                             )
+                      )
+aov.out <- aov(DV ~ IV, data = alternative_data)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+save_altF_values[i] <- simulated_F
+}
+
+F_comparison <- tibble(type = rep(c("null","alternative"), each = 1000), 
+                        F_value = c(rf(1000,3,96),save_altF_values))
+
+ggplot(F_comparison, aes(x=F_value))+
+  geom_histogram(bins=100)+
+  facet_wrap(~type, nrow=2)
+```
+
+```{r}
+qf(.95,3,200-4)
+```
+
+```{r}
+length(save_altF_values[save_altF_values > 2.65])
+```
+
+```{r}
+
+n_per_level <- 25
+
+# repeat the above many times to compute the F-distribution
+save_altF_values <- length(1000)
+for(i in 1:1000){
+  alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                        IV = as.factor(rep(1:levels, each = n_per_level)),
+                        DV = c(rnorm(n_per_level, 125, 25),
+                               rnorm(n_per_level, 100, 25),
+                               rnorm(n_per_level, 100, 25),
+                               rnorm(n_per_level, 100, 25)
+                               )
+                        )
+  aov.out <- aov(DV ~ IV, data = alternative_data)
+  simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+  save_altF_values[i] <- simulated_F
+}
+
+length(save_altF_values[save_altF_values > qf(.95,3,(n_per_level*4)-4)])/1000
+```
+
+```{r}
+
+num_subjects <- c(5,10,15,20,25,30)
+sim_power <- length(length(num_subjects))
+
+for(n in 1:length(num_subjects)){
+
+  n_per_level <- num_subjects[n]
+  
+  save_altF_values <- length(1000)
+  for(i in 1:1000){
+    alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                          IV = as.factor(rep(1:levels, each = n_per_level)),
+                          DV = c(rnorm(n_per_level, 125, 25),
+                                 rnorm(n_per_level, 100, 25),
+                                 rnorm(n_per_level, 100, 25),
+                                 rnorm(n_per_level, 100, 25)
+                                 )
+                          )
+    aov.out <- aov(DV ~ IV, data = alternative_data)
+    simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+    save_altF_values[i] <- simulated_F
+  }
+  
+  power <- length(save_altF_values[save_altF_values > qf(.95,3,(n_per_level*4)-4)])/1000
+  sim_power[n] <- power
+}
+
+power_curve <- tibble(num_subjects,
+                      sim_power)
+
+knitr::kable(power_curve)
+```
+
+```{r}
+ggplot(power_curve, aes(x=num_subjects,
+                        y=sim_power))+
+  geom_point()+
+  geom_line()
+```
+
+```{r}
+num_subjects <- c(10, 50, 75, 100, 125, 150, 175, 200)
+sim_power <- length(length(num_subjects))
+
+for(n in 1:length(num_subjects)){
+
+  n_per_level <- num_subjects[n]
+  
+  # repeat the above many times to compute the F-distribution
+  save_altF_values <- length(1000)
+  for(i in 1:1000){
+    alternative_data <- tibble(subjects = 1:(levels*n_per_level),
+                          IV = as.factor(rep(1:levels, each = n_per_level)),
+                          DV = c(rnorm(n_per_level, rnorm(1,0,.2), 1),
+                                 rnorm(n_per_level, rnorm(1,0,.2), 1),
+                                 rnorm(n_per_level, rnorm(1,0,.2), 1),
+                                 rnorm(n_per_level, rnorm(1,0,.2), 1)
+                                 )
+                          )
+    aov.out <- aov(DV ~ IV, data = alternative_data)
+    simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+    save_altF_values[i] <- simulated_F
+  }
+  
+  power <- length(save_altF_values[save_altF_values > qf(.95,3,(n_per_level*4)-4)])/1000
+  sim_power[n] <- power
+}
+
+power_curve <- tibble(num_subjects,
+                      sim_power)
+
+knitr::kable(power_curve)
+```
+
+```{r}
+ggplot(power_curve, aes(x=num_subjects,
+                        y=sim_power))+
+  geom_point()+
+  geom_line()
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

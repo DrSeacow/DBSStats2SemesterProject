@@ -1,0 +1,520 @@
+---
+title: "Lab4"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab4}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Generalization Assignment
+
+### Q1: Run and prove equivalence of ANOVA and T-Test on following data
+
+```{r}
+
+library(tibble)
+library(dplyr)
+
+
+example_data <- tibble(Group = rep(c("A", "B"), each = 5),
+                       DV = c(2, 4, 3, 5, 4, 7, 6, 5, 6, 7))
+
+## The t-test
+
+Ttest <- t.test(DV ~ Group, var.equal = TRUE, data = example_data)
+Ttest
+
+```
+
+```{r}
+## ANOVA
+
+example_data$DV <- as.vector(example_data$DV)
+
+grand_mean <- mean(example_data$DV)
+
+### SS Total
+
+SS_totals <- example_data %>%
+  mutate(grand_mean = mean(example_data$DV)) %>%
+  mutate(deviations = DV - grand_mean,
+         sq_deviations = (DV - grand_mean)^2)
+
+SS_total <- sum(SS_totals$sq_deviations)
+
+group_means <- example_data %>%
+  group_by(Group) %>%
+  summarize(mean_DV = mean(DV), .groups = 'drop')
+  
+### SS Between 
+
+SS_betweens <- example_data %>%
+  mutate(grand_mean = mean(example_data$DV),
+         group_means = rep(group_means$mean_DV, each = 5)) %>%
+  mutate(deviations = group_means - grand_mean,
+         sq_deviations = (group_means - grand_mean)^2)
+
+SS_between <- sum(SS_betweens$sq_deviations)
+
+### SS Within
+
+group_means <- example_data %>%
+  group_by(Group) %>%
+  summarize(mean_DV = mean(DV), .groups = 'drop')
+
+SS_withins <- example_data %>%
+  mutate(group_means = rep(group_means$mean_DV, each = 5)) %>%
+  mutate(deviations = group_means - DV,
+         sq_deviations = (group_means - DV)^2)
+
+SS_within <- sum(SS_withins$sq_deviations)
+
+SS_total
+
+SS_between + SS_within
+
+SS_total == SS_between + SS_within
+
+#### Despite appearing to have the same values, these SSs are different. I'll proceed, but perhaps there's an issue with very small digits and rounding?
+
+dfb <- 2 - 1
+MS_Between <- SS_between / dfb
+
+dfw <- 10 - 2
+MS_Within <- SS_within / dfw
+
+F_ratio <- MS_Between / MS_Within
+F_ratio
+### F is 16.9
+print(pf(16.9, 1, 8, lower.tail = FALSE))
+
+### P-value is 0.003386143; reject null. Does the automated method agree?
+
+Aov <- summary(aov(DV ~ Group, data = example_data))
+Aov
+
+```
+
+```{r}
+
+###Checking whether the results (P-Value) agree:
+
+t.test(DV ~ Group, var.equal = TRUE, data = example_data)$p.value == pf(16.9, 1, 8, lower.tail = FALSE)
+```
+
+```{r}
+round(Aov[[1]]$`F value`[1]) == round((Ttest$statistic)^2)
+```
+
+### For this question 1, I was able to computationally solve for the ANOVA (not using the function) with slight reference to the lab project. Due to slight confusions, and being a bit too desperate to manually run the T-Test despite being confused on how to select each group mean, I needed veeeery slight reminders from the video on running these test functions. I was able to prove the p-values are the same without help, and in theory would've known how to prove the relation between P and T, but this latter bit needed some video consultation regarding the grammar of the situation.
+
+### Q2 Reference to your undergraduate class ANOVA
+```{r}
+
+library(data.table)
+anova_lab_data <- fread("https://raw.githubusercontent.com/CrumpLab/statisticsLab/master/data/Jamesetal2015Experiment2.csv")
+
+library(ggplot2)
+
+anova_lab_data
+
+```
+
+```{r}
+
+anova_lab_data$Condition <- as.factor(anova_lab_data$Condition)
+levels(anova_lab_data$Condition) <- c("Control",
+                                      "Reactivation+Tetris",
+                                      "Tetris_Only",
+                                      "Reactivation_Only")
+
+anova_lab_df <- anova_lab_data %>% 
+  group_by(Condition) %>% 
+  summarise(means = mean(Days_One_to_Seven_Number_of_Intrusions),
+            SEs = sd(Days_One_to_Seven_Number_of_Intrusions) / sqrt(length(Days_One_to_Seven_Number_of_Intrusions)))
+
+ggplot(anova_lab_df, aes(x = Condition, y = means)) + 
+  geom_bar(stat = "identity", aes(fill = Condition)) + 
+  geom_errorbar(aes(ymin = means - SEs,               
+                    ymax = means + SEs), width = .1) +
+  geom_point(data = anova_lab_data, aes(x = Condition, y=Days_One_to_Seven_Number_of_Intrusions), alpha = .5) +
+  geom_point(alpha = .25) +
+  ylab("Intrusive Memories (Mean for Week)")
+
+```
+
+```{r}
+
+anova_lab_data_anova <- summary(aov(Days_One_to_Seven_Number_of_Intrusions ~ Condition, anova_lab_data))
+
+anova_lab_data_anova
+
+```
+### For some reason, also, Papaja does not show up in my package installation options and I cannot figure it out. Nevertheless:
+
+## One-way analysis of variance revealed an effect of experimental condition on the number of intrusive memories reported over the span of a week, F[3, 68] = 3.795, MSE = 10.09, P = 0.0141.
+
+### Help-report: For this second question, I wasn't exactly sure what was required (as far as what variables, what aspects of the graph, etc) so I thoroughly consulted the original lab project documentation in which this data is linked. I had numerous super-bizarre erroneous moments with the wrong number of levels mysteriously being loaded, so I ended up consulting the solutions video, but I don't think I really need to. Again, humbly, I was unable to install Papaja but I hope my APA results sentence is at least somewhat sufficient.
+
+## Follow-along with exercises
+
+```{r}
+
+library(tibble)
+romeo_juliet <- tibble(subjects = 1:20,
+                       Group = rep(c("No Context",
+                                 "Context Before",
+                                 "Context After",
+                                 "Partial Context"), each = 5),
+                       Comprehension = c(3,3,2,4,3,
+                                         5,9,8,4,9,
+                                         2,4,5,4,1,
+                                         5,4,3,5,4
+                                   )
+                          )
+
+romeo_juliet$Group <- factor(romeo_juliet$Group,
+                             levels = c("No Context",
+                                 "Context Before",
+                                 "Context After",
+                                 "Partial Context"))
+
+knitr::kable(romeo_juliet)
+
+```
+
+### GrandMean and Total SS
+
+```{r}
+library(dplyr)
+grand_mean <- mean(romeo_juliet$Comprehension)
+
+SS_total_table <- romeo_juliet %>% 
+  mutate(grand_mean = mean(romeo_juliet$Comprehension)) %>% 
+  mutate(deviations = Comprehension - grand_mean,
+         sq_deviations = (Comprehension - grand_mean)^2)
+
+SS_total <- sum(SS_total_table$sq_deviations)
+```
+
+### Between SS
+
+```{r}
+
+group_means <- romeo_juliet %>% 
+  group_by(Group)%>%
+  summarize(mean_Comprehension = mean(Comprehension), .groups = 'drop')
+
+SS_between_table <- romeo_juliet %>% 
+  mutate(grand_mean = mean(romeo_juliet$Comprehension),
+         group_means = rep(group_means$mean_Comprehension, each = 5)) %>%
+  mutate(deviations = group_means - grand_mean,
+         sq_deviations = (group_means - grand_mean)^2)
+
+SS_between <- sum(SS_between_table$sq_deviations)
+  
+
+```
+
+### Within SS
+
+```{r}
+
+group_means <- romeo_juliet %>% 
+  group_by(Group) %>%
+  summarize(mean_Comprehension = mean(Comprehension), .groups = 'drop')
+
+SS_within_table <- romeo_juliet %>% 
+  mutate(group_means = rep(group_means$mean_Comprehension, each = 5)) %>%
+  mutate(deviations = group_means - Comprehension,
+         sq_deviations = (group_means - Comprehension)^2)
+
+SS_within <- sum(SS_within_table$sq_deviations)
+  
+
+```
+
+###Check of additivity
+
+```{r}
+SS_total
+
+SS_between + SS_within
+
+SS_total == SS_between + SS_within 
+```
+
+### F as a ratio of variances
+
+```{r}
+
+dfb <- 4 - 1
+MS_Between <- SS_between / dfb
+
+dfw <- 20 - 4
+MS_Within <- SS_within / dfw
+
+F_ratio <- MS_Between / MS_Within
+
+```
+
+### ANOVA Method using Matrices
+
+```{r}
+
+matrix_data <- matrix(c(3, 3, 2, 4, 3, 
+                        5, 9, 8, 4, 9,
+                        2, 4, 5, 4, 1,
+                        5, 4, 3, 5, 4),
+                      ncol = 4,
+                      nrow = 5)
+
+colnames(matrix_data) <- c("No Context",
+                                "Context Before",
+                                "Context After",
+                                "Partial Context")
+
+SS_total <- sum( (matrix_data - mean(matrix_data))^2 )
+SS_between <- sum( (colMeans(matrix_data) - mean(matrix_data))^2 )*5
+SS_within <- sum( (colMeans(matrix_data) - t(matrix_data))^2 )
+
+dfb <- 4 - 1 
+MS_Between <- SS_between / dfb
+
+dfw <- 20 - 4
+MS_Within <- SS_within / dfw
+
+F_ratio <- MS_Between / MS_Within
+```
+
+### Using the "AOV" function
+
+```{r}
+
+romeo_juliet$Comprehension <- sample(romeo_juliet$Comprehension)
+
+anova.out <- aov(Comprehension ~ Group, data = romeo_juliet)
+
+summary(anova.out)
+
+```
+
+## Simulating Components of the ANOVA Table
+
+### SS Total
+
+```{r}
+
+sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+
+SS_total <- sum( (mean(sim_data) - sim_data)^2 )
+SS_total
+
+SS_total_distribution <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  SS_total <- sum( (mean(sim_data) - sim_data)^2 )
+  SS_total_distribution[i] <- SS_total
+}
+hist(SS_total_distribution)
+
+mean(SS_total_distribution)
+
+SS_total_distribution_alt <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  sim_data[,1] <- sim_data[,1] + 2
+  SS_total <- sum( (mean(sim_data) - sim_data)^2 )
+  SS_total_distribution_alt[i] <- SS_total
+}
+hist(SS_total_distribution_alt)
+mean(SS_total_distribution_alt)
+
+library(ggplot2)
+SS_total_data <- data.frame(SS_total = c(SS_total_distribution,
+                                         SS_total_distribution_alt),
+                            type = rep(c("Null", "Alternative"), each = 1000))
+ggplot(SS_total_data, aes(x = SS_total, group = type, fill = type)) +
+  geom_histogram(position = "dodge")
+
+```
+
+### Simulating SS Between
+
+```{r}
+
+SS_between_distribution <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  SS_between <- sum( (mean(sim_data) - colMeans(sim_data))^2 )*5
+  SS_between_distribution[i] <- SS_between
+}
+
+SS_between_distribution_alt <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  sim_data[,1] <- sim_data[,1] + 2
+  SS_between <- sum( (mean(sim_data) - colMeans(sim_data))^2 ) * 5
+  SS_between_distribution_alt[i] <- SS_between
+}
+
+SS_between_data <- data.frame(SS_between = c(SS_between_distribution,
+                                             SS_between_distribution_alt),
+                              type = rep(c("Null", "Alternative"), each = 1000))
+ggplot(SS_between_data, aes(x = SS_between, group = type, fill = type)) + 
+  geom_histogram(position = "dodge")
+
+```
+
+### Simulating the SS Within
+
+```{r}
+
+SS_Within_distribution <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  SS_Within <- sum( (colMeans(sim_data) - t(sim_data))^2 )
+  SS_Within_distribution[i] <- SS_Within
+}
+
+SS_Within_distribution_alt <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  sim_data[,1] <- sim_data[,1] + 2
+  SS_Within <- sum( (colMeans(sim_data) - t(sim_data))^2)
+  SS_Within_distribution_alt[i] <- SS_Within
+}
+
+SS_Within_data <- data.frame(SS_Within = c(SS_Within_distribution,
+                                           SS_Within_distribution_alt),
+                             type = rep(c("Null", "Alternative"), each = 1000))
+ggplot(SS_Within_data, aes(x = SS_Within, group = type, fill = type)) +
+  geom_histogram(position = "dodge")
+```
+
+### Simulating MS Between, MS Within, and the Resulting F-Ratio
+
+```{r}
+
+MS_between_data <- data.frame(MS_between = c(SS_between_distribution / 3,
+                                             SS_between_distribution_alt / 3),
+                              type = rep(c("Null", "Alternative"), each = 1000))
+ggplot(MS_between_data, aes(x = MS_between, group = type, fill = type)) +
+  geom_histogram(position = "dodge")
+
+MS_Within_data <- data.frame(MS_Within = c(SS_Within_distribution / 16,
+                                           SS_Within_distribution_alt / 16),
+                             type = rep(c("Null", "Alternative"), each = 1000))
+ggplot(MS_Within_data, aes(x = MS_Within, group = type, fill = type)) +
+  geom_histogram(position = "dodge")
+
+F_distribution <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  SS_between <- sum( (mean(sim_data) - colMeans(sim_data))^2 ) * 5
+  SS_Within <- sum( (colMeans(sim_data) - t(sim_data))^2 )
+  sim_F <- (SS_between / 3) / (SS_Within / 16)
+  F_distribution[i] <- sim_F
+}
+
+F_distribution_alt <- c()
+for(i in 1:1000){
+  sim_data <- matrix(rnorm(20, 0, 1), ncol = 4, nrow = 5)
+  sim_data[,1] <- sim_data[,1]+2
+  SS_between <- sum( (mean(sim_data) - colMeans(sim_data))^2 ) * 5
+  SS_Within <- sum( (colMeans(sim_data) - t(sim_data))^2 )
+  sim_F <- (SS_between / 3) / (SS_Within / 16)
+  F_distribution_alt[i] <- sim_F
+}
+
+F_data <- data.frame(F = c(F_distribution,
+                           F_distribution_alt),
+                     type = rep(c("Null", "Alternative"),
+                                each = 1000))
+ggplot(F_data, aes(x = F, group = type, fill = type)) +
+  geom_histogram(position = "dodge")
+```
+
+## Truly Simulating the F-Distribution Itself
+
+```{r}
+
+pf(7.227, 3, 16, lower.tail = FALSE)
+
+romeo_juliet$Comprehension <- rnorm(20, 0, 1)
+aov.out <- aov(Comprehension ~ Group, data = romeo_juliet)
+simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+
+save_F_values <- length(10000)
+for(i in 1:10000){
+  romeo_juliet$Comprehension <- rnorm(20, 0, 1)
+  aov.out <- aov(Comprehension ~ Group, data = romeo_juliet)
+  simulated_F <- summary(aov.out)[[1]]$`F value`[1]
+  save_F_values[i] <- simulated_F
+}
+
+hist(save_F_values)
+
+length(save_F_values[save_F_values > 7.22]) / length(save_F_values)
+```
+
+## One-Way ANOVAs Using the AOV Function
+
+```{r}
+
+romeo_juliet <- tibble(subjects = 1:20,
+                       Group = rep(c("No Context",
+                                     "Context Before",
+                                     "Context After",
+                                     "Partial Context"), each = 5),
+                       Comprehension = c(3, 3, 2, 4, 3,
+                                         5, 9, 8, 4, 9,
+                                         2, 4, 5, 4, 1,
+                                         5, 4, 3, 5, 4
+                                    )
+                            )
+
+romeo_juliet$Group <- factor(romeo_juliet$Group,
+                             levels = c("No Context",
+                                        "Context Before",
+                                        "Context After",
+                                        "Partial Context"))
+
+anova.out <- aov(Comprehension ~ Group, data = romeo_juliet)
+anova.out
+summary(anova.out)
+
+#alternatively
+
+summary(aov(Comprehension ~ Group, data = romeo_juliet))
+
+model.tables(anova.out)
+
+anova.out <- aov(Comprehension ~ Group, data = romeo_juliet)
+summary(anova.out)
+model.tables(anova.out)
+
+my_summary <- summary(anova.out)
+my_summary[[1]]$Df
+my_summary[[1]]$`Sum Sq`
+my_summary[[1]]$`Mean Sq`
+my_summary[[1]]$`F value`
+my_summary[[1]]$`Pr(>F)`
+
+#Papaja doesn't seem to exist for me? I'm confused on how to get it running...
+
+```
+
+
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

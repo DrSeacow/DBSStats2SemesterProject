@@ -1,0 +1,110 @@
+---
+title: "Practicals_for_Final"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Practicals_for_Final}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Demonstrating types of objects
+
+## Vectors, with averaging example
+
+```{r}
+library(dplyr)
+vector_example <- c(4, 1, 9, 4, 2, 8, 7, 3)
+mean(vector_example)
+```
+
+## Data frame, with the average for one level of a particular variable
+
+```{r}
+
+colors <- as.character(c(rep("blue", "red", "yellow", "purple", "green"), each = 2))
+
+data_frame_example <- data.frame(colors = c("blue", "blue", "red", "red", "yellow", "yellow", "purple", "purple", "green", "green"),
+                                congruency = c("congruent", "incongruent", "congruent", "incongruent", "congruent", "incongruent","congruent", "incongruent", "congruent", "incongruent"),
+                                data = c(35, 49, 21, 92, 54, 17, 38, 43, 20, 31))
+```
+
+### Congruent mean
+```{r}
+average_congruent <- mean(data_frame_example$data[data_frame_example$congruency == "congruent"])
+average_congruent
+```
+
+## List (utility exemplified with ice cream review example)
+```{r}
+
+names(bnj) <- c("flavor", "tastyrating", "creamyrating", "pricing")
+bnj <- list("phishfood", 7, 4, "med")
+
+hagendaaz <- list("vanilla", 6, 9, "high")
+names(hagendaaz) <- c("flavor", "tastyrating", "creamyrating", "pricing")
+
+breyers <- list("brownie", 9, 3, "low")
+names(breyers) <- c("flavor", "tastyrating", "creamyrating", "pricing")
+
+icecreamreviews <- list(bnj, hagendaaz, breyers)
+
+### To conveniently vectorize tastyness ratings across two brands (the utility of lists is intended to be demonstrated here under a context of putting in all the review details of each ice cream brand separately)
+
+hd_breyers_tasty_compare <- c(icecreamreviews[[2]]$tastyrating, icecreamreviews[[3]]$tastyrating)
+hd_breyers_tasty_compare
+
+```
+
+## Matrix - Useful for turning a single vector into a table
+```{r}
+
+matrix_data <- c(rnorm(100, 0, 1))
+
+matrix_example <- matrix(data = matrix_data, nrow = 10, ncol = 10, byrow = FALSE)
+
+```
+
+#### Matrices allow convenient triangulation of locations in your dataset- for example, here are two means:
+```{r}
+second_col_mean <- mean(matrix_example[,2])
+sixth_row_mean <- mean(matrix_example[6,])
+
+means_of_second_col_and_sixth_row <- c(second_col_mean, sixth_row_mean)
+means_of_second_col_and_sixth_row
+```
+
+# Using a "for" loop 
+## Demonstrating the obvious point that with a ratio (let's pretend we're talking about F), as the denominator ("within-group differences") gets larger, the overall ratio ("effect") gets smaller. Output gets smaller with each iteration.
+```{r}
+
+for(i in 0:20){
+ pretend_F_ratio <- (rnorm(1, 0, 0.5)+1) / ((rnorm(1, 0, 0.5)^2) + i)
+  print(pretend_F_ratio)
+}
+
+```
+
+### Using a "while" loop for the same exact purpose; also demonstrating 
+
+```{r}
+breakpoint <- 20
+while(i <= 20){
+  pretend_F_ratio <- ((rnorm(1, 0, 0.5)^2)) / (rnorm(1, 0, 0.5)*i)
+  if((pretend_F_ratio) < 0.05){
+    break
+  }
+  print(pretend_F_ratio)
+}
+
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

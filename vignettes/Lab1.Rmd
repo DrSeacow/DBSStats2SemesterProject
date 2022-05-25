@@ -1,0 +1,270 @@
+---
+title: "Lab1"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#"
+)
+```
+
+### Typing manually (as opposed to copy-pasting) helps me remember code better. This webpage will be split into parts 1 (the assignment itself) and 2 (following along with the exercises).
+
+# PART 1: Generalization Assignment
+```{r}
+
+library(readxl)
+library(dplyr)
+library(tidyr)
+
+lab1data <- read_xlsx("C:/Users/m3gad/OneDrive/Documents/R/DBSStats2Labs/Lab1_data.xlsx", col_names = TRUE, range = "B3:M13")
+
+#What follows here is extremely sloppy, I understand and apologize. I regretfully could not figure out how to use the (col =) and (names = "") using pivot_long with a dataset containing multiple layered variables as is such in this assignment. Figuring out this alternative took far too much time and stress...thankfully, I was (barely albeit successfully) able to resist tampering with the raw data in Excel, a last-resort measure that I find quite unsavory since that's a large part of what we're trying to avoid by using R in the first place. Given the time and effort spent on this disastrously sloppy code- since it yields the long-form dataset with accurate formatting that we're aiming for, and I did so without tampering with the raw data, I think I'll leave it at this and call it somewhat of a success. 
+
+c1 <- lab1data[1,]
+c2 <- lab1data[2,]
+c3 <- lab1data[3,]
+c4 <- lab1data[4,]
+c5 <- lab1data[5,]
+c6 <- lab1data[6,]
+c7 <- lab1data[7,]
+c8 <- lab1data[8,]
+c9 <- lab1data[9,]
+c10 <- lab1data[10,]
+
+lab1d <- t(c(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10))
+
+lab1study <- data.frame(participant = rep(1:10, each = 12),
+                        context = rep(rep(c("Noisy", "Quiet"), each = 6), 10),
+                        time = rep(rep(c("Morning", "Afternoon", "Evening"), each = 2), 20),
+                        condition = rep(c("A", "B"), 60),
+                        scores = t(lab1d))
+                        
+lab1study
+
+#Struggle-report: Again, I was thankfully able to avoid tampering with the raw data. I ended up not looking at the solution video, so by that metric, I scored a 10/10. However, there was an enormous amount of googling involved, so if the score were really "help needed" then I deserve a -100/10. 
+```             
+
+```{r}
+
+```
+
+# PART 2: Follow along with exercise
+
+```{r}
+wide_data <- data.frame(person = 1:5,
+                        Morning = c(1, 3, 2, 4, 3),
+                        Afternoon = c(3, 4, 5, 4, 7),
+                        Evening = c(7, 8, 7, 6, 9))
+knitr::kable(wide_data)
+```
+
+```{r}
+long_data <- data.frame(person = rep(1:5, each = 3),
+                       time_of_day = rep(c("Morning", "Afternoon", "Evening"), 5),
+                       counts = c(1, 3, 7, 3, 4, 8, 2, 5, 7, 4, 4, 6, 3, 7, 9))
+knitr::kable(long_data)
+```
+
+```{r}
+person <- rep(1:5, 3)
+time_of_day <- rep(c("Morning", "Afternoon", "Evening"), each = 5)
+counts <- c(1, 3, 7, 3, 4, 8, 2, 5, 7, 4, 4, 6, 3, 7, 9)
+test <- data.frame(person, time_of_day, counts)
+```
+
+```{r}
+library(tidyr)
+pivot_longer(data = wide_data,
+             cols = !person,
+             names_to = "time_of_day",
+             values_to = "counts")
+```
+
+```{r}
+proprietary_data <- "1, 3, 7; 3, 4, 8; 2, 5, 7; 4, 4, 6; 3, 7, 9"
+
+library(dplyr)
+
+subjects <- unlist(strsplit(proprietary_data, split = ";"))
+subjects
+subjects <- strsplit(subjects, split = ",")
+subjects
+
+subjects <- t(data.frame(subjects))
+subjects
+
+colnames(subjects) <- c("Morning", "Afternoon", "Evening")
+subjects
+
+row.names(subjects) <- 1:5
+
+subjects <- as.data.frame(subjects) %>% 
+  mutate(person = 1:5)
+
+pivot_longer(data = subjects,
+             cols = 1:3,
+             names_to = "time_of_day",
+             values_to = "counts")
+```
+
+```{r}
+dv <- rnorm(10,0,1)
+t.test(dv)
+```
+
+```{r}
+subject_data <- matrix(rbinom(50*10,1,0.5), ncol = 10, nrow = 50)
+subject_means <- rowMeans(subject_data)
+t.test(subject_means, mu=0.5)
+```
+
+```{r}
+subject_number <- rep(1:25, each=10)
+
+day <- rep(rep(c("Wednesday", "Sunday"), each = 5), 25)
+
+measurement_number <- rep(1:5, 2*25)
+
+weights <- rnorm(250, 100, 25)
+
+weight_data <- data.frame(subject_number,
+                          day,
+                          measurement_number,
+                          weights)
+head(weight_data)
+
+#Alternatively
+
+weight_data <- data.frame(subject_number = rep(1:25, each = 10),
+                          day = rep(rep(c("Wednesday", "Sunday"), each = 5), 25),
+                          measurement_number = rep(1:5, 2*25),
+                          weights = rnorm(250, 100, 25))
+
+subject_means <- weight_data %>%
+  group_by(subject_number, day) %>%
+  summarize(mean_weight = mean(weights), .groups = "drop")
+
+head(subject_means)
+
+t.test(mean_weight~day, paired=TRUE, data = subject_means)
+```
+
+```{r}
+subjects <- rep(1:10, each = 50)
+room <- rep(c("Noisy","Quiet"), each = 50*5)
+words <- rep(1:50, 10)
+correct <- rbinom(500, 1, 0.5)
+
+recall_data <- tibble(subjects,
+                      room,
+                      words,
+                      correct)
+
+recall_data
+
+count_data <- recall_data %>%
+  group_by(subjects, room) %>%
+  summarize(number_correct = sum(correct), .groups = "drop")
+
+count_data
+
+t.test(number_correct~room, var.equal=TRUE, data=count_data)
+```
+
+# Linear regression
+
+```{r}
+people <- tibble(height = rnorm(100, 90, 10),
+                 day = sample(1:31, 100, replace = TRUE))
+people
+
+lm.out <- lm(height~day, data = people)
+lm.out
+
+summary(lm.out)
+```
+
+# One-way ANOVA
+
+## second level header
+
+This is plain text.
+
+```{r}
+weight_data <- tibble(subject_number = rep(1:25, each = 5*7),
+                      day = rep(rep(c("S", "M", "T", "W", "Th", "F", "Sa"),
+                                    each = 5), 25),
+                      measurement_number = rep(1:5, 7*25),
+                      weights = rnorm(25*5*7, 100, 25))
+
+subject_means <- weight_data %>%
+  group_by(subject_number, day) %>%
+  summarize(mean_weight = mean(weights), .groups = "drop")
+
+subject_means
+
+aov.out <- aov(mean_weight ~ day, data = subject_means)
+summary(aov.out)
+```
+
+# Regression and ANOVA are run similarly
+
+```{r}
+subject_means <- weight_data %>%
+  group_by(subject_number, day) %>%
+  summarize(mean_weight = mean(weights), .groups="drop")
+
+subject_means
+
+lm.out <- lm(mean_weight ~ day, data = subject_means)
+summary(lm.out)
+```
+
+# Factorial ANOVA
+
+```{r}
+weight_data <- tibble(subject_number = rep(1:25, each = 4*7),
+                      day = rep(rep(c("S","M","T","W","Th","F","Sa"),
+                                    each = 4), 25),
+                      time_of_day = rep(c("Morning", "Morning", "Evening", "Evening"), 7*25),
+                      measurement_number = rep(rep(1:2, 2), 7*25),
+                      weights = rnorm(25*4*7, 100, 25))
+
+subject_means <- weight_data %>%
+  group_by(subject_number, day, time_of_day) %>%
+  summarize(mean_weight = mean(weights), .groups = "drop")
+
+subject_means
+
+aov.out <- aov(mean_weight ~ day*time_of_day, data = subject_means)
+summary(aov.out)
+```
+
+# Switching from Factorial ANOVA to multiple regression
+
+```{r}
+subject_means <- weight_data %>% 
+  group_by(subject_number, day, time_of_day) %>%
+  summarize(mean_weight = mean(weights), .groups = "drop")
+
+subject_means$day <- as.factor(subject_means$day)
+subject_means$time_of_day <- as.factor(subject_means$time_of_day)
+
+subject_means
+
+lm.out <- lm(mean_weight ~ day*time_of_day, data = subject_means)
+summary(lm.out)
+
+anova(lm.out)
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

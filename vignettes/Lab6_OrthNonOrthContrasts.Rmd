@@ -1,0 +1,514 @@
+---
+title: "Lab6"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab6}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# Generalization Assignment
+### 1. Section 12.3.3 from your textbook refers to: The problem with replications of a meaningless experiment: ‘alpha and the captain’s age.’ The issue here is that if you run an ineffectual experiment enough times you can always find a significant result by chance. The textbook mentions that if you repeat an experiment 20 times, you are guaranteed to find a significant result with .64 probability, and the probability is .92 if you repeat the experiment 50 times. 
+
+### A) Make use of the rbinom() function to show you can reproduce both probabilities. (1 point)
+
+```{r}
+library(tidyverse)
+library(tibble)
+
+binom_data <- replicate(10000, sum(rbinom(20, 1, 0.05)))
+length(binom_data[binom_data > 0])/10000
+
+binom_data2 <- replicate(10000, sum(rbinom(50, 1, 0.05)))
+length(binom_data2[binom_data2 > 0])/10000
+
+### I understood how to construct the first term, defining the experiments in this case "binom_data," but the actual "check" part using the "length" function was a grammar I was not too familiar with and needed to consult the solutions video for. 70%
+
+```
+
+### B) If the ineffectual experiment was conducted 20 times, and there were four groups, and the experimenter would accept a significant result from any of the orthogonal linear contrasts, what would be the probability of finding a significant result here? (1 point)
+
+```{r}
+dataB <- replicate(10000, sum(rbinom(20, 3, 0.05)))
+
+length(dataB[dataB > 0])/10000
+
+### I ended up trying to go waaay too deep here with the aov and tibble functions- when the row/column mismatches seemed to obfuscate any interprable results, I realized I should just check the solutions video, realizing it was way simpler than I thought. 0%
+```
+
+### The next two questions draw a connection to a technique we have not yet discussed called p-curve analysis (Simonsohn et al., 2014; Wallis, 1942). P-curve analysis is sometimes used for purposes of meta-analyses to determine whether there is “good” evidence for an effect in the literature.
+
+### 2. Consider that a researcher publishes a study showing a significant effect, p <. 05; but, in reality the researcher makes a type I error, and the manipulation did not cause any difference. If many other researchers replicated the study, what kind of p-values would they find? Use R to create a sampling distribution of p-values that would be expected in this situation. What shape does this distribution have? (2 points)
+
+```{r}
+
+p_values <- c()
+
+for(i in 1:10000){
+IV <- rep(1:2, each = 20)
+data2 <- c(rnorm(20, 0, 1), rnorm(20, 0, 1))
+
+q2_data <- tibble(IV, data2)
+
+p_values[i] <- t.test(data2 ~ IV, var.equal = TRUE, data = q2_data)$p.value
+}
+
+hist(p_values)
+  
+### I knew that the rbinom function must've played a role here somewhere (*I also just realized it's supposed to be the rnorm function, not rbinom. So I may have been more clueless than I thought). But I tripped and figuratively faceplanted on the situation when I realized that I'm not making a frequency distribution itself, I'm making a distribution of p-values. So I ultimately needed to watch the solutions video. 50%
+
+### The distribution overall should be relatively flat- similar frequency of occurence of every possible p-value. Makes sense, since this is a randomized/rnorm null situation...
+```
+
+### 3. Now assume that the published result reflects a true effect. Specifically, let’s imagine the study had two groups (between-subjects), with 20 subjects in each group. Assume that scores for subjects are all sampled from a normal distribution, and that group A has larger mean than group B by .5 standard deviations (e.g., Cohen’s d = .5). If many other researchers replicated the study, what kind of p-values would they find? Use R to create a sampling distribution of p-values that would be expected in this situation. What shape does this distribution have? (2 points)
+
+```{r}
+q3_p_values <- c()
+
+for(i in 1:10000){
+IV <- rep(1:2, each = 20)
+data3 <- c(rnorm(20, 0, 1), rnorm(20, 0.5, 1))
+
+q3_data <- tibble(IV, data3)
+
+q3_p_values[i] <- t.test(data3 ~ IV, var.equal = TRUE, data = q3_data)$p.value
+}
+
+hist(q3_p_values)
+
+### This was a fairly natural and quick extension of the previous question. If seeing the solutions video for q2 carries over to q3, I scored maybe 25% on help-requirement. IF this question were to stand on its own terms, I scored a 100% (teeechnically didn't need to check help for this question in particular).
+
+### The distribution is more compressed to the lower end, towards 0; there are still p-values spanning the whole range, but the majority seem to be below 0.2. Approximately 3500 out of 10,000 p-values are below the likely alpha level of 0.05. 
+```
+
+### Bonus Questions
+
+### 4. Same as #3, except that we now assume the design has four groups (between-subjects). Assume that group A has a mean that is .5 standard deviations larger than groups B, C, and D. Use R to create a sampling distribution of p-values that would be expected for the linear contrast evaluating the research hypothesis that A > B = C = D. (1 point)
+
+```{r}
+q4_p_values <- c()
+
+for(i in 1:10000){
+IV <- as.factor(rep(1:4, each = 10))
+data4 <- as.numeric(c(rnorm(10, 0.5, 1), rnorm(10, 0, 1), rnorm(10, 0, 1), rnorm(10, 0, 1)))
+
+q4_data <- tibble(IV, data4)
+
+contrast <- c(3, -1, -1, -1)
+
+contrasts(q4_data$IV)<- contrast
+
+aov4 <- aov(data4 ~ IV, data = q4_data)
+
+p_results <- summary.aov(aov4, split = list(IV = list("contrast" = 1)))
+
+q4_p_values[i] <- p_results[[1]]$'Pr(>F)'[2]
+}
+
+hist(q4_p_values)
+
+### hist(q4_p_values) It's at this point that I got frustrated and ran to the solutions video. Maybe 65% for effort but I'm probably missing the mark at the last moment. Damn, in hindsight I was closer than I thought...rows 106 and 108 needed your guidance but that was about it.
+
+### The distribution here is similar to that for question 3. Most of the p-values are below 0.2, approx 2700/10,000 are below 0.05.
+
+```
+
+### 5. Consider a one-factor between subjects ANOVA with four groups. Run two simulations of the null-hypothesis, one for the omnibus test, and one for the specific linear contrast mentioned above A > B = C = D. Is the probability of rejecting a type I error (for rejecting the null with alpha < .05) the same for the omnibus test versus a specific contrast? (1 point)
+
+```{r}
+data1_p_values <- c()
+data2_p_values <- c()
+for(i in 1:10000){
+IV1 <- as.factor(rep(1:4, each = 10))
+data1 <- as.numeric(c(rnorm(10, 0, 1), rnorm(10, 0, 1), rnorm(10, 0, 1), rnorm(10, 0, 1)))
+
+q5_data1 <- tibble(IV1, data1)
+
+contrast <- c(3, -1, -1, -1)
+
+contrasts(q5_data1$IV1) <- contrast
+
+aov5a <- aov(data1 ~ IV, data = q5_data1)
+
+p_resultsa <- summary.aov(aov5a, split = list(IV = list("contrast" = 1)))
+
+data1_p_values[i] <- p_resultsa[[1]]$'Pr(>F)'[1]
+data2_p_values[i] <- p_resultsa[[1]]$'Pr(>F)'[2]
+}
+
+sigPa <- length(which(data1_p_values < 0.05))
+sigPb <- length(which(data2_p_values < 0.05))
+
+sigPa == sigPb
+sigPa > sigPb
+sigPa < sigPb
+
+### I'd initially had the whole thing put there twice. The thing I was missing was that the code in line 138 could be duplicated just so that I extract the omnibus separately from the same analysis. Maybe 70%. 
+
+### It appears that more (albeit only slightly more, in the grand scheme of things) type-1 errors are made for the contrast, rather than the omnibus.
+
+```
+
+# Follow-along with class exercise
+
+```{r}
+library(tibble)
+library(tidyr)
+library(dplyr)
+options(dplyr.summarise.inform = FALSE)
+
+smith_example <- tribble(
+  ~Same, ~Different, ~Imagery, ~Photo, ~Placebo,
+  #--|--|--|--|----
+  25,11,14,25,8,
+  26,21,15,15,20,
+  17,9,29,23,10,
+  15,6,10,21,7,
+  14,7,12,18,15,
+  17,14,22,24,7,
+  14,12,14,14,1,
+  20,4,20,27,17,
+  11,7,22,12,11,
+  21,19,12,11,4
+) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "IV",
+               values_to = "DV") %>%
+  mutate(IV = factor(IV,levels = c("Same", 
+                                    "Different", 
+                                    "Imagery", 
+                                    "Photo", 
+                                    "Placebo")))
+
+aov.out <- aov(DV~IV, smith_example)
+summary(aov.out)
+
+contrasts(smith_example$IV)
+
+c1 <- c(2,-3,2,2,-3)
+c2 <- c(2,0,-1,-1,0)
+c3 <- c(0,0,+1,-1,0)
+c4 <- c(0,+1,0,0,-1)
+
+my_contrasts <- cbind(c1, c2, c3, c4)
+
+contrasts(smith_example$IV) <- my_contrasts
+
+aov.out <- aov(DV~IV, smith_example)
+summary(aov.out)
+
+(full_summary <- summary.aov(aov.out,
+                             split=list(IV=list("(1+3+4) vs (2+5)"=1, 
+                                                "(1) vs (3+4)" = 2, 
+                                                "(3) vs (4)"= 3,
+                                                "(2) vs (5)"= 4)
+                                        )
+                             )
+  )
+```
+
+```{r}
+full_summary[[1]]$`F value`[1]
+mean(full_summary[[1]]$`F value`[2:5])
+```
+
+## Orthogonal Contrasts
+
+```{r}
+
+group_means <- c(4,3,10,11)
+(grand_mean <- mean(group_means))
+(differences <- group_means-grand_mean)
+(squared_differences <- differences^2)
+(sum_squares <- sum(squared_differences))
+
+### Unfortunately, papaja still isn't working for me. I should really consult your help on this...
+
+```
+
+```{r}
+fake_data <- tibble(IV = factor(c("A","B","C","D")),
+                    DV = c(4,3,10,11))
+
+contrasts(fake_data$IV)
+```
+
+```{r}
+contrasts(fake_data$IV)[,'D']
+
+contrasts(fake_data$IV)[,'D'] * differences
+
+grand_mean + (1 * differences[4])
+```
+
+```{r}
+contrasts(fake_data$IV)
+
+contrasts(fake_data$IV) * differences
+```
+
+```{r}
+grand_mean*contrasts(fake_data$IV) + contrasts(fake_data$IV) * differences
+```
+
+```{r}
+grand_mean
+mean(c(4, 3, 10, 11))
+```
+
+```{r}
+c1 <- c(-1,-1,1,1)
+c2 <- c(1,-1,0,0)
+c3 <- c(0,0,-1,1)
+
+my_contrasts <- cbind(c1,c2,c3)
+
+contrasts(fake_data$IV) <- my_contrasts
+contrasts(fake_data$IV)
+
+cor(contrasts(fake_data$IV))
+```
+
+```{r}
+contrasts(fake_data$IV) * group_means
+
+colSums(contrasts(fake_data$IV) * group_means)
+
+colSums(contrasts(fake_data$IV) * group_means)^2
+
+(colSums(contrasts(fake_data$IV) * group_means)^2)/ colSums(contrasts(fake_data$IV)^2)
+```
+
+```{r}
+fake_data$DV
+
+grand_means <- c(7, 7, 7, 7)
+grand_means
+
+grand_means + contrasts(fake_data$IV)[,1]
+grand_means + contrasts(fake_data$IV)[,1] * 2
+grand_means + contrasts(fake_data$IV)[,1] * 3
+
+grand_means+
+(contrasts(fake_data$IV)[,1]*3.5)+
+(contrasts(fake_data$IV)[,2]*.5)+
+(contrasts(fake_data$IV)[,3]*.5)  
+```
+
+```{r}
+fake_data_2 <- fake_data
+fake_data_2 <- cbind(fake_data,contrasts(fake_data$IV))
+
+lm(DV ~ c1 + c2 + c3, data = fake_data_2 )
+summary(lm(DV ~ c1 + c2 + c3, data = fake_data_2 ))
+```
+
+```{r}
+grand_means+
+(contrasts(fake_data$IV)[,1]*3.5)+
+(contrasts(fake_data$IV)[,2]*.5)+
+(contrasts(fake_data$IV)[,3]*.5)  
+```
+
+```{r}
+fake_data <- tibble(IV = factor(c("A","B","C","D")),
+                    DV = c(43,22,53,104))
+
+c1 <- c(-1,-1,1,1)
+c2 <- c(1,-1,0,0)
+c3 <- c(0,0,-1,1)
+my_contrasts <- cbind(c1,c2,c3)
+
+contrasts(fake_data$IV) <- my_contrasts
+
+fake_data_2 <- cbind(fake_data,contrasts(fake_data$IV))
+
+lm(DV ~ c1 + c2 + c3, data = fake_data_2 )
+summary(lm(DV ~ c1 + c2 + c3, data = fake_data_2 ))
+```
+
+```{r}
+sim_data <- tibble(DV = rnorm(6*100,0,1),
+                   IV = factor(rep(1:6, each = 100)))
+
+c1 <- c(1,-1,0,0,0,0)
+c2 <- c(0,0,1,-1,0,0)
+c3 <- c(0,0,0,0,1,-1)
+c4 <- c(-1,-1,2,2,-1,-1)
+c5 <- c(1,1,0,0,-1,-1)
+
+orth_contrasts <- cbind(c1,c2,c3,c4,c5)
+
+cor(orth_contrasts)
+
+contrasts(sim_data$IV) <- orth_contrasts
+
+summary.aov(aov(DV~IV, sim_data), split=list(IV=list("c1"=1, 
+                                                "c2" = 2, 
+                                                "c3"= 3,
+                                                "c4"= 4,
+                                                "c5" = 5)
+                                        ))
+```
+
+```{r}
+all_sim_data <- tibble()
+
+for(i in 1:10000){
+
+sim_data <- tibble(DV = rnorm(6*100,0,1),
+                   IV = factor(rep(1:6, each = 100)))
+
+contrasts(sim_data$IV) <- orth_contrasts
+
+sim_output <- summary.aov(aov(DV~IV, sim_data), split=list(IV=list("c1"=1, 
+                                                "c2" = 2, 
+                                                "c3"= 3,
+                                                "c4"= 4,
+                                                "c5" = 5)
+                                        ))
+
+sim_results <- tibble(type = c("omnibus",rep("contrast",5)),
+                      p_values = sim_output[[1]]$`Pr(>F)`[1:6],
+                      sim_num = rep(i,6)
+                      )
+
+all_sim_data <- rbind(all_sim_data,sim_results)
+}
+```
+
+```{r}
+type_I_errors <- all_sim_data %>%
+  mutate(type_I = p_values < .05) %>%
+  group_by(type, sim_num) %>%
+  summarize(counts = sum(type_I)) %>%
+  group_by(type,counts) %>%
+  summarize(type_I_frequency = sum(counts))
+
+knitr::kable(type_I_errors)
+```
+
+```{r}
+type_I_errors %>%
+  filter(type == 'omnibus',
+         counts == 1) %>%
+  pull(type_I_frequency)/10000
+```
+
+```{r}
+type_I_errors %>%
+  filter(type == 'contrast',
+         counts > 0) %>%
+  pull(type_I_frequency) %>%
+  sum()/50000
+```
+
+```{r}
+type_I_errors %>%
+  filter(type == 'contrast',
+         counts > 0) %>%
+  pull(type_I_frequency) %>%
+  sum()/10000
+```
+### Correcting for multiple comparisons
+```{r}
+romeo_juliet <- tibble(subjects = 1:20,
+                       Group = rep(c("Context Before",
+                                 "Partial Context",
+                                 "Context After",
+                                 "Without context"), each = 5),
+                       Comprehension = c(5,9,8,4,9,
+                                         5,4,3,5,4,
+                                         2,4,5,4,1,
+                                         3,3,2,4,3
+                                   )
+                          )
+
+romeo_juliet$Group <- factor(romeo_juliet$Group,
+                             levels = c("Context Before",
+                                 "Partial Context",
+                                 "Context After",
+                                 "Without context")
+                             )
+
+c1 <- c(1,1,1,-3)
+c2 <- c(0,0,1,-1)
+c3 <- c(3,-1,-1,-1)
+c4 <- c(1,-1,0,0)
+
+new_contrasts <- cbind(c1,c2,c3,c4)
+cor(new_contrasts)
+
+contrasts(romeo_juliet$Group) <- new_contrasts
+
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c1"=1, "c2" = 2, "c3"= 3, "c4" = 4)))
+
+contrasts(romeo_juliet$Group) <- c1
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c1"=1)))
+
+contrasts(romeo_juliet$Group) <- c2
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c2"=1)))
+
+contrasts(romeo_juliet$Group) <- c3
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c3"=1)))
+
+contrasts(romeo_juliet$Group) <- c4
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("c4"=1)))
+```
+
+```{r}
+romeo_juliet <- tibble(subjects = 1:20,
+                       Group = rep(c("Context Before",
+                                 "Partial Context",
+                                 "Context After",
+                                 "Without context"), each = 5),
+                       Comprehension = c(5,9,8,4,9,
+                                         5,4,3,5,4,
+                                         2,4,5,4,1,
+                                         3,3,2,4,3
+                                   )
+                          )
+
+romeo_juliet$Group <- factor(romeo_juliet$Group,
+                             levels = c("Context Before",
+                                 "Partial Context",
+                                 "Context After",
+                                 "Without context")
+                             )
+
+
+c1 <- c(3,-1,-1,-1)
+c2 <- c(1,1,-1,-1)
+c3 <- c(1,-1,1,-1)
+
+contrasts(romeo_juliet$Group) <- c1
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
+
+contrasts(romeo_juliet$Group) <- c2
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
+
+contrasts(romeo_juliet$Group) <- c3
+summary.aov(aov(Comprehension~Group, romeo_juliet), split=list(Group=list("contrast"=1)))
+
+romeo_juliet <- romeo_juliet %>%
+  mutate(c1 = rep(c(3,-1,-1,-1),each=5),
+         c2 = rep(c(1,1,-1,-1),each=5),
+         c3 = rep(c(1,-1,1,-1),each=5)
+         )
+
+summary(lm(Comprehension ~ c1 + c2 + c3 , romeo_juliet))
+
+library(ppcor)
+spcor(romeo_juliet[,3:6])$estimate^2
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```
+ 	

@@ -1,0 +1,334 @@
+---
+title: "Lab8_FactorialAnova_Pt2_w_Contrasts"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab8_FactorialAnova_Pt2_w_Contrasts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Generalization Assignment
+
+### Matt: The "struggle-report" here is a little controversial. You went over all these generalization problems in class and I followed along. But I didn't check the solutions video once (*correction- I did for the bonus question), and I already had the answers here. So I'm not sure it would be appropriate for me to rate the degree to which I "needed help." 
+
+### The answer to q2 is a bit strange though, the power levels for the interaction seem to be extremely low no matter how many subjects I include. 
+
+### Q1
+```{r}
+library(tidyverse)
+
+df <- data.frame(A = c("A1", "A1", "A2", "A2"),
+                 B = c("B1", "B2", "B1", "B2"),
+                 dv = c(0, 0, 0.5, 0.25))
+
+ggplot(df, aes(y = dv, x = B, color = A)) +
+  geom_bar(stat = "identity") +
+  geom_point() +
+  geom_line()
+
+ggplot(df, aes(y = dv, x = B, fill = A)) +
+  geom_bar(stat = "identity", position = "dodge")
+  
+```
+### Q2
+```{r}
+N <- 33
+
+A_pvalue <- c()
+B_pvalue <- c()
+AB_pvalue <- c()
+for(i in 1:1000){
+  IVA <- rep(rep(c("1","2"), each=2),N)
+  IVB <- rep(rep(c("1","2"), 2),N)
+  DV <- c(replicate(N,c(rnorm(1,0,1), 
+                        rnorm(1,-0.25,1), 
+                        rnorm(1,.5,1),
+                        rnorm(1,0.25,1)  
+          )))
+  sim_df <- data.frame(IVA,IVB,DV)
+  
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+  A_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[1]
+  B_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[2]
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+length(A_pvalue[A_pvalue<0.05])/1000
+length(B_pvalue[B_pvalue<0.05])/1000
+length(AB_pvalue[AB_pvalue<0.05])/1000
+
+```
+
+```{r}
+### At least 33 subjects will be required to possess a power of at least 0.8 in detecting a main effect of A at an alpha of 0.05.
+```
+
+## Q3
+```{r}
+N <- 490
+
+A_pvalue <- c()
+B_pvalue <- c()
+AB_pvalue <- c()
+for(i in 1:1000){
+  IVA <- rep(rep(c("1","2"), each=2),N)
+  IVB <- rep(rep(c("1","2"), 2),N)
+  DV <- rnorm(4*N, c(0, 0, 0.5, 0.25), 1)
+          
+  sim_df <- data.frame(IVA,IVB,DV)
+  
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+length(AB_pvalue[AB_pvalue<0.05])/1000
+
+```
+```{r}
+### I'm not sure what's going wrong here. As far as I can tell, this simulation should be correct. But it looks like even with 100,000 subjects the power of the interaction would be extremely low (for the sake of your computer processing speed, I put it back to 100).
+
+### Ok, I ended up caving and watching the solutions video to see how you dealt with this. It turns out that framing the DV in this other way is what fixes it, although if they're different routes to the same solution, I'm pretty confused as to why framing the DV this way made the difference. 
+
+### That being said, it looks like an exact minimum of 490 subjects per group would be required to have a power level of at least 0.8.
+```
+
+```{r}
+### Bonus question: Power curve for previous question
+
+subject_increments <- seq(25, 800, 25)
+power_estimate <- c()
+
+for(si in 1:length(subject_increments)) {
+
+  N <- subject_increments[si]
+  AB_pvalue <- c()
+  for(i in 1:10){
+    
+    sim_df <- tibble(
+      IVA <- rep(rep(c("1","2"), each=2),N),
+      IVB <- rep(rep(c("1","2"), 2),N),
+      DV <- rnorm(4*N, c(0, 0, 0.5, 0.25), 1)
+    )        
+  
+  
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+power_estimate[si] <- length(AB_pvalue[AB_pvalue<0.05])/1000
+
+}
+
+power_curve <- tibble(subject_increments, 
+                      power_estimate)
+ggplot(power_curve, aes(x = subject_increments,
+                        y = power_estimate))+
+  geom_point()+
+  geom_line()
+
+### I'm not sure what's going on here- I admit that I did watch the solutions video thoroughly for only this one question (0% struggle-rating). However, you'll notice that every single power level is listed as the same. I'm pretty sure my code here is the same as yours, I really couldn't figure out why this happened. 
+
+```
+
+## Working Alongside the Examples
+
+```{r}
+library(tibble)
+library(ggplot2)
+library(patchwork)
+
+grand_mean <- 50
+A <- c(0, 5, 10, 15, 20, 25, 50)
+B <- c(0, 5, -15)
+AB <- rep(0, length(A)*length(B))
+
+model_data <- tibble()
+ for(i in 1:length(A)){
+   for(j in 1:length(B)){
+     IVA <- i
+     IVB <- j
+     DV <- grand_mean+A[i]+B[j]+AB[(i-1)*length(B)+j]
+     sc_GM <- grand_mean
+     sc_A <- A[i]
+     sc_B <- B[j]
+     sc_AB <- AB[(i-1)*length(B)+j]
+     row_entry <- tibble(IVA, IVB, DV, 
+                         sc_GM, sc_A, sc_B, sc_AB)
+     model_data <- rbind(model_data, row_entry)
+   }
+ }
+knitr::kable(model_data)
+```
+
+```{r}
+library(tibble)
+library(ggplot2)
+library(patchwork)
+
+grand_mean <- 50
+A <- c(-5, 0, 5)
+B <- c(-5, 0, 5)
+AB <- rep(0, length(A)*length(B))
+
+model_data <-tibble()
+for(i in 1: length(A)){
+  for(j in 1: length(B)){
+    IVA <- i
+    IVB <- j
+    DV <- grand_mean+A[i]+B[j]+AB[(i-1)*length(B)+j]
+    sc_GM <- grand_mean
+    sc_A <- A[i]
+    sc_B <- B[j]
+    sc_AB <- AB[(i-1)*length(B)+j]
+    row_entry <- tibble(IVA, IVB, DV, sc_GM, sc_A, sc_B, sc_AB)
+    model_data <- rbind(model_data, row_entry)
+  }
+}
+
+knitr::kable(model_data)
+```
+
+```{r}
+
+bar_graph <- ggplot(model_data,
+                    aes(y = DV,
+                    x = as.factor(IVA),
+                    fill = as.factor(IVB)))+
+  geom_bar(stat = 'identity', position = 'dodge')
+
+line_graph <- ggplot(model_data,
+                     aes(y = DV,
+                     x = IVA,
+                     linetype = as.factor(IVB)))+
+  geom_line()+
+  geom_point()
+
+(bar_graph/line_graph)
+```
+
+```{r}
+grand_mean <- 10
+A <- c(-5,0,5)
+B <- c(-5,0,5)
+AB <- rep(0,length(A)*length(B))
+
+model_data <- tibble()
+for(i in 1:length(A)){
+  for(j in 1:length(B)){
+    IVA <- i 
+    IVB <- j
+    DV <- grand_mean+A[i]+B[j]+AB[(i-1)*length(B)+j]
+    sc_GM <- grand_mean
+    sc_A <- A[i]
+    sc_B <- B[j]
+    sc_AB <- AB[(i-1)*length(B)+j] 
+    row_entry <- tibble(IVA,IVB,DV,
+                        sc_GM,sc_A,sc_B,sc_AB)
+    model_data <- rbind(model_data,row_entry)
+  }
+}
+
+knitr::kable(model_data)
+```
+
+```{r}
+
+bar_graph <- ggplot(model_data,
+                    aes(y = DV,
+                    x = as.factor(IVA),
+                    fill = as.factor(IVB)))+
+  geom_bar(stat = 'identity', position = 'dodge')
+
+line_graph <- ggplot(model_data,
+                     aes(y = DV,
+                     x = IVA,
+                     linetype = as.factor(IVB)))+
+  geom_line()+
+  geom_point()
+
+(bar_graph/line_graph)
+```
+
+```{r}
+
+grand_mean <- 500
+A <- c(-100,0,100)
+B <- c(100,-100)
+AB <- c(0,0,0,-100,0,-200)
+
+model_data <- tibble()
+for(i in 1:length(A)){
+  for(j in 1:length(B)){
+    IVA <- i 
+    IVB <- j
+    DV <- grand_mean+A[i]+B[j]+AB[(i-1)*length(B)+j]
+    sc_GM <- grand_mean
+    sc_A <- A[i]
+    sc_B <- B[j]
+    sc_AB <- AB[(i-1)*length(B)+j] 
+    row_entry <- tibble(IVA,IVB,DV,
+                        sc_GM,sc_A,sc_B,sc_AB)
+    model_data <- rbind(model_data,row_entry)
+  }
+}
+
+knitr::kable(model_data)
+```
+
+```{r}
+
+bar_graph <- ggplot(model_data, 
+                    aes(y=DV,
+                        x=as.factor(IVA),
+                        fill=as.factor(IVB)))+
+  geom_bar(stat='identity', position='dodge')
+
+line_graph <- ggplot(model_data, 
+                     aes(y=DV,
+                         x=IVA,
+                         linetype=as.factor(IVB)))+
+  geom_line()+
+  geom_point()
+
+(bar_graph/line_graph)
+```
+
+```{r}
+N <- 40
+
+A_pvalue <- c()
+B_pvalue <- c()
+AB_pvalue <- c()
+for(i in 1:1000){
+  IVA <- rep(rep(c("1","2"), each=2),N)
+  IVB <- rep(rep(c("1","2"), 2),N)
+  DV <- c(replicate(N,c(rnorm(1,0,1), 
+                        rnorm(1,0,1), 
+                        rnorm(1,.5,1), 
+                        rnorm(1,.5,1)  
+          )))
+  sim_df <- data.frame(IVA,IVB,DV)
+  
+  aov_results <- summary(aov(DV~IVA*IVB, sim_df))
+  A_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[1]
+  B_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[2]
+  AB_pvalue[i]<-aov_results[[1]]$`Pr(>F)`[3]
+}
+
+length(A_pvalue[A_pvalue<0.05])/1000
+length(B_pvalue[B_pvalue<0.05])/1000
+length(AB_pvalue[AB_pvalue<0.05])/1000
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

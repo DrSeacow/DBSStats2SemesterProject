@@ -1,0 +1,134 @@
+---
+title: "Lab10_NestedDesigns"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab10_NestedDesigns}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Generalization Assignment
+
+## 1. From Chapter 20, reproduce the bat and hat example (20.2) in R. Your code should represent the data in long-form, conduct the ANOVA, and report the ANOVA table. You will know if you did it correctly if you can reproduce the ANOVA table from the textbook. (3 points)
+
+```{r}
+library(tidyverse)
+bat_hat <- tribble(~Subjects, ~Age, ~Phonological_Similarity, ~Pairs_Recalled,
+                           "s1", "5", "Similar", 15,
+                           "s2", "5", "Similar", 23,
+                           "s3", "5", "Similar", 12,
+                           "s4", "5", "Similar", 16,
+                           "s5", "5", "Similar", 14,
+                           "s6", "12", "Similar", 39,
+                           "s7", "12", "Similar", 31,
+                           "s8", "12", "Similar", 40,
+                           "s9", "12", "Similar", 32,
+                           "s10", "12", "Similar", 38,
+                           "s1", "5", "Dissimilar", 13,
+                           "s2", "5", "Dissimilar", 19,
+                           "s3", "5", "Dissimilar", 10,
+                           "s4", "5", "Dissimilar", 16,
+                           "s5", "5", "Dissimilar", 12,
+                           "s6", "12", "Dissimilar", 29,
+                           "s7", "12", "Dissimilar", 15,
+                           "s8", "12", "Dissimilar", 30,
+                           "s9", "12", "Dissimilar", 26,
+                           "s10", "12", "Dissimilar", 30
+)
+
+bat_hat <- bat_hat %>%
+  mutate(Subjects = as.factor(Subjects),
+         Age = as.factor(Age),
+         Phonological_Similarity = as.factor(Phonological_Similarity))
+                           
+aov_out <- aov(Pairs_Recalled ~ Age * Phonological_Similarity +
+                 Error(Subjects/(Age*Phonological_Similarity)), bat_hat)
+
+summary(aov_out)
+```
+
+```{r}
+ggplot(bat_hat, aes(x = Phonological_Similarity,
+                            y = Pairs_Recalled,
+                            shape = Age,
+                            group = Age))+
+  geom_point(stat = "summary", fun = "mean")+
+  geom_line(stat = "summary", fun = "mean")+
+  theme_classic(base_size = 12)
+```
+
+## 2. From Chapter 21, reproduce the phonological similarity example (21.2.1) in R. Your code should represent the data in long-form, conduct the ANOVA, and report the ANOVA table. You will know if you did it correctly if you can reproduce the ANOVA table from the textbook. (3 points) Note, the F-value for the phonological similarity factor that you find with R may not be the same as the textbook. The textbook produces the quasi-F, and it is OK if you do not.
+
+### Matt: I assume this was a mistake, and you meant the "faces in space" example. Phonological similarity was the "bat-hat" example in the previous question, "21.2.1" is "faces in space."
+
+```{r}
+
+faces_spaces <- tribble(~Subjects, ~Typicality, ~Faces, ~RT,
+                           "s1", "Typical", "A1", 20,
+                           "s2", "Typical", "A1", 9,
+                           "s3", "Typical", "A1", 18,
+                           "s4", "Typical", "A1", 5,
+                           "s1", "Typical", "A2", 22,
+                           "s2", "Typical", "A2", 8,
+                           "s3", "Typical", "A2", 20,
+                           "s4", "Typical", "A2", 14,
+                           "s1", "Typical", "A3", 25,
+                           "s2", "Typical", "A3", 21,
+                           "s3", "Typical", "A3", 18,
+                           "s4", "Typical", "A3", 16,
+                           "s1", "Typical", "A4", 24,
+                           "s2", "Typical", "A4", 21,
+                           "s3", "Typical", "A4", 21,
+                           "s4", "Typical", "A4", 22,
+                           "s1", "Typical", "A5", 19,
+                           "s2", "Typical", "A5", 21,
+                           "s3", "Typical", "A5", 33,
+                           "s4", "Typical", "A5", 23,
+                           "s1", "Atypical", "A1", 37,
+                           "s2", "Atypical", "A1", 34,
+                           "s3", "Atypical", "A1", 35,
+                           "s4", "Atypical", "A1", 38,
+                           "s1", "Atypical", "A2", 37,
+                           "s2", "Atypical", "A2", 35,
+                           "s3", "Atypical", "A2", 39,
+                           "s4", "Atypical", "A2", 49,
+                           "s1", "Atypical", "A3", 43,
+                           "s2", "Atypical", "A3", 35,
+                           "s3", "Atypical", "A3", 39,
+                           "s4", "Atypical", "A3", 51,
+                           "s1", "Atypical", "A4", 48,
+                           "s2", "Atypical", "A4", 37,
+                           "s3", "Atypical", "A4", 37,
+                           "s4", "Atypical", "A5", 50,
+                           "s1", "Atypical", "A5", 45,
+                           "s2", "Atypical", "A5", 39,
+                           "s3", "Atypical", "A5", 40,
+                           "s4", "Atypical", "A5", 52,
+)
+
+
+faces_spaces <- faces_spaces %>%
+  mutate(Subjects = as.factor(Subjects),
+         Typicality = as.factor(Typicality),
+         Faces = as.factor(Faces))
+                           
+aov_out <- aov(RT ~ Typicality * Faces +
+                 Error(Subjects/(Typicality*Faces)), faces_spaces)
+
+summary(aov_out)
+
+### It's apparent that I'm doing something incorrectly as my results are not matching up with the textbook's. I'm also pretty confused trying to find the correct mean square values to compute the quasi-F out of. I can only hope that the effort counts for something and the analyses that did come out of this aren't totally meaningless. It seems likely that I'm failing to convey the message to R that these factors are nested in a certain way. However, I really, really am not sure how I'd do so... It's therefore somewhat unfortunate there's no solutions video or what not I could get guidance from, but that may reflect in the strategy I did ultimately attempt here. 
+
+```
+
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

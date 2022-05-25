@@ -1,0 +1,24 @@
+---
+title: "About"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{About}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(DBSStats2Labs)
+```
+#> Good evening commanders, captains, champions, challengers, and connisseurs alike!
+
+#> This is my first website constructed using R Markdown and pkgdown. This endeavor has been motivated by Dr. Matt Crump's lab portion of Experimental Methods & Design in Psychology (Stats 2) at Brooklyn College.
+
+#> Stay tuned for all my lab project assignments!

@@ -1,0 +1,273 @@
+---
+title: "Lab3"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "# "
+)
+```
+
+```{r}
+#  Today's lab will pertain to multiple regression, orthogonal and non-orthogonal.
+```
+
+### Typing manually (as opposed to copy-pasting) helps me remember code better. This webpage will be split into parts 1 (the assignment itself) and 2 (following along with the exercises).
+
+# PART 1: Generalization Assignment
+```{r}
+#NOTE: Because I'm not quite brilliant enough to creatively think of tutorial tips 100% on my own, I had to consult some online discourse. The links to these web-pages are provided below. Matt- please let me know if this was an acceptable choice. 
+```
+
+```{r}
+#When conducting multiple regression analyses, it is crucial that all predictor variables are
+#orthogonal. The "geometric" basis for this concept may obfuscate the straightforwardness of
+#this concept: each predictor should be independent from one another, avoid predicting changes 
+#in other predictor variables, and should hold an independent predictive "influence" over the 
+#dependent variables. In other words- if any predictor varies alongside another, their shared
+#influence over the DV would confound one another. For example, if "height" and "age" were both
+#assessed as predictive variables for the DV "joint health," the principle of orthogonality would
+#be inherently violated since height and age could both be reasonably hypothesized as holding a 
+#relationship with joint health- and because height would also be expected to covary with age.
+#Any unique influence of height on joint health, for example, might accidentally be confounded 
+#by the non-orthogonal influence of age on height and consequently joint health as well.
+
+#Taken at face value, checking for orthogonality between two variables is extremely simple.
+#Because non-orthogonal predictor variables would co-vary with one another, it is reasonable
+#to deduce that they should correlate with one another as well. Let's flesh out this age/height/
+#joint-health example with some fake data assuming 18 subjects (and some arbitrary "joint health" metric):
+
+library(tibble)
+age <- c(8, 10, 11, 13, 14, 16, 19, 21, 23, 26, 29, 32, 41, 48, 52, 59, 66, 74)
+height <- c(4.5, 4.8, 4.7, 5.3, 5.5, 6, 5.9, 6.2, 5.5, 6.3, 5.6, 5.8, 5.6, 6.2, 4.9, 5.7, 6.1, 5.9)
+joint_health_index <- c(7, 8, 9, 8, 6, 5, 7, 6, 8, 3, 8, 6, 8, 5, 2, 2, 3, 2)
+
+joint_health_data <- tibble(Age = age,
+                            Height = height,
+                            JHI = joint_health_index)
+
+#We can effectively check for orthogonality by assessing whether age and height are correlated with one another, using a simple cor expression.
+
+cor(joint_health_data)
+
+#It is apparent from this correlation matrix that age and height have a correlation of 0.40. Now what about the R^2 values?
+
+cor(joint_health_data)^2
+
+#Thus, 16.4% of variation in either the age or height variables can explain variation in height or age, respectively. They are therefore liable to confound one another in regression analyses for their ability to predict variance in joint health. 
+
+#There are methods to correct for non-orthogonality such as this, however that is not the focus of the present tutorial. Instead, it is my desire to point out that manually checking correlation matrices is a relatively indirect and (debatably) inefficient way to probe for orthogonality in one's data-set. Let's talk about one other method to check orthogonality. We must install and load the "ibd" package, and our data must be in matrix format if it is not already. We can then use the "check.orthogonality" function.
+
+data <- as.matrix(joint_health_data)
+
+install.packages("ibd", repos = "http://cran.us.r-project.org")
+library(ibd)
+check.orthogonality(data)
+
+```
+
+```{r}
+#This function is very simple. If the function returns a "1," the rows are orthogonal. If it returns "0," they are not. The limitation to this function is that it only checks whether ROWS are PAIRWISE orthogonal or not. The result returned of "0" reaffirms our earlier checking of correlation matrices, which also indicated that the variables are not orthogonal. 
+
+#Matt: I honestly worry that I either misunderstood this function, or that my data is not in the correct format for row-based pairwise orthogonality testing. I admit that I'm only just scratching the surface with this, but I hope this "tutorial" sets out what it was meant to do. 
+```
+
+```{r}
+#WEBPAGES REFERENCED FOR THIS DOCUMENTATION:
+# https://www.rdocumentation.org/packages/ibd/versions/1.5/topics/check.orthogonality
+# https://rdrr.io/cran/ibd/man/check.orthogonality.html
+```
+# PART 2: Follow-along with lab demonstration
+```{r}
+#Explaining variance using multiple variables
+random_vectors <- matrix(rnorm(20*26, 0, 1), nrow = 20, ncol = 26)
+colnames(random_vectors) <- letters
+random_vectors <- as.data.frame(random_vectors)
+
+hist(cor(random_vectors))
+
+summary(lm(a~b, data = random_vectors))
+
+summary(lm(a~b,data=random_vectors))$r.squared
+
+summary(lm(a~b,data=random_vectors))$r.squared
+
+summary(lm(a~b+c,data=random_vectors))$r.squared
+
+summary(lm(a~b+c+d,data=random_vectors))$r.squared
+
+summary(lm(a~b+c+d+e,data=random_vectors))$r.squared
+
+summary(lm(a~b+c+d+e+f,data=random_vectors))$r.squared
+
+summary(lm(a~b+c+d+e+f+g,data=random_vectors))$r.squared
+
+summary(lm(a~b+c+d+e+f+g+h,data=random_vectors))$r.squared
+
+summary(lm(a~b*c,data=random_vectors))$r.squared
+
+summary(lm(a~b*c*d,data=random_vectors))$r.squared
+
+summary(lm(a~b*c*d*e,data=random_vectors))$r.squared
+
+summary(lm(a~b*c*d*e*f,data=random_vectors))$r.squared
+
+summary(lm(a~b*c*d*e, data = random_vectors))
+
+summary(lm(a~b*c*d*e*f, data = random_vectors))
+
+library(tibble)
+
+slamecka_design <- tribble(
+  ~Subjects, ~OL, ~IL,
+  1, 2, 0,
+  1, 4, 4,
+  1, 8, 8,
+  2, 4, 0,
+  2, 8, 4,
+  2, 2, 8,
+  3, 8, 0,
+  3, 2, 4,
+  3, 4, 8,
+  4, 2, 4,
+  4, 4, 0,
+  4, 8, 8,
+  5, 4, 4,
+  5, 2, 8,
+  5, 8, 0,
+  6, 8, 4,
+  6, 4, 8,
+  6, 2, 0,
+  7, 2, 8,
+  7, 4, 0,
+  7, 8, 4,
+  8, 4, 8,
+  8, 2, 4,
+  8, 8, 0,
+  9, 8, 8,
+  9, 4, 4,
+  9, 2, 0
+)
+
+cor(slamecka_design)
+
+slamecka_confounded <- tribble(
+  ~Subjects, ~OL, ~IL,
+  1, 2, 0,
+  1, 4, 4,
+  1, 8, 8,
+  2, 4, 4,
+  2, 8, 8,
+  2, 2, 0,
+  3, 8, 8,
+  3, 2, 0,
+  3, 4, 4,
+  4, 2, 0,
+  4, 4, 4,
+  4, 8, 8,
+  5, 4, 4,
+  5, 2, 0,
+  5, 8, 8,
+  6, 8, 8,
+  6, 4, 4,
+  6, 2, 0,
+  7, 2, 0,
+  7, 4, 4,
+  7, 8, 8,
+  8, 4, 4,
+  8, 2, 0,
+  8, 8, 8,
+  9, 8, 8,
+  9, 4, 4,
+  9, 2, 0
+)
+cor(slamecka_confounded)
+
+library(dplyr)
+library(ggplot2)
+```
+#Hulme et al (1984) example
+```{r}
+data <- tibble(X = c(4, 4, 7, 7, 10, 10),
+               T = c(1, 2, 2, 4, 3, 6),
+               Y = c(14, 23, 30, 50, 39, 67))
+
+(overall_model <- summary(lm(Y~X+T, data = data)))
+
+cor(data)
+cor(data)^2
+
+lm.x <- lm(Y~X, data = data)
+data <- data %>%
+  mutate(X_residuals = residuals(lm.x),
+         X_predicted_Y = predict(lm.x))
+
+knitr::kable(data)
+
+A <- ggplot(data, aes(y=Y, x=X))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)
+
+B <- ggplot(data, aes(y=X_predicted_Y, x=X))+
+  geom_point()+
+  geom_smooth(method="lm",se=FALSE)
+
+C <- ggplot(data, aes(y=X_residuals, x=X))+
+  geom_point()+
+  geom_smooth(method="lm",se=FALSE)
+
+install.packages("patchwork", repos = "http://cran.us.r-project.org")
+library(patchwork)
+
+A+B+C
+
+lm.t <- lm(Y~T, data=data)
+
+data <- data %>%
+  mutate(T_residuals = residuals(lm.t),
+         T_predicted_Y = predict(lm.t))
+D <- ggplot(data, aes(y=Y, x=T))+
+  geom_point()+
+  geom_smooth(method="lm", se=FALSE)
+
+E <- ggplot(data, aes(y=T_predicted_Y, x=T))+
+  geom_point()+
+  geom_smooth(method="lm",se=FALSE)
+
+F <- ggplot(data, aes(y=T_residuals, x=T))+
+  geom_point()+
+  geom_smooth(method="lm",se=FALSE)
+
+D+E+F
+
+lm.xt <- lm(X~T, data = data)
+residuals(lm.xt)
+
+cor(residuals(lm.xt), data$Y)^2
+
+lm.tx <- lm(T~X, data = data)
+residuals(lm.tx)
+cor(residuals(lm.tx), data$Y)^2
+
+overall_model$r.squared - cor(residuals(lm.xt), data$Y)^2 - cor(residuals(lm.tx), data$Y)^2
+
+library(ppcor)
+data <- tibble(X = c(4, 4, 7, 7, 10, 10),
+               T = c(1, 2, 2, 4, 3, 6),
+               Y = c(14, 23, 30, 50, 39, 67))
+
+spcor(data, method = "pearson")
+
+spcor(data, method = "pearson")$estimate^2
+
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

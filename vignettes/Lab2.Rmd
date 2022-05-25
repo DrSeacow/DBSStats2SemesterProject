@@ -1,0 +1,218 @@
+---
+title: "Lab2"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "# "
+)
+```
+
+###  Typing manually (as opposed to copy-pasting) helps me remember code better. This webpage will be split into parts 1 (the assignment itself) and 2 (following along with the exercises).
+
+#  Part 1: Generalization Exercise
+```{r}
+# Sample Code:
+library(tibble)
+library(ggplot2)
+slamecka_design <- tibble(number_of_learning_trials = rep(c(2,4,8), each = 6),
+                          number_of_IL = rep(rep(c(2,4,8), 2), 3),
+                          subjects = 1:18,
+                          recall = c(35, 21, 6,
+                                     39, 31, 8,
+                                     40, 34, 18,
+                                     52, 42, 26,
+                                     61, 58, 46,
+                                     73, 66, 52
+                                     )
+                          )
+ggplot(slamecka_design, aes(x = number_of_IL,
+                            group = number_of_learning_trials,
+                            y=recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean")+
+  theme_classic()
+
+# original version:
+
+```
+
+# Question 1) Make this graph resemble that from textbook fig. 5.5 as closely as possible:
+```{r}
+
+slamecka_design$number_of_learning_trials <- as.factor(slamecka_design$number_of_learning_trials)
+
+ggplot(slamecka_design, aes(x = number_of_IL,
+                            group = number_of_learning_trials,
+                            y=recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean", aes(shape = number_of_learning_trials))+
+  theme_classic()+
+  labs(y="Number of words correct", x = "Number of interpolated lists")+
+  scale_y_continuous(breaks = c(0, 20, 40, 60, 80), limits = c(0,80))+
+  scale_x_continuous(breaks = c(2, 4, 8), limits = c(2, 8))
+
+# Struggle-report: I was able to assign the labels and read just which variables were on which axes correctly with minimal help (only slight googling), and figured out the shape differentiation with aes, but once it came to skipping the tick-mark for "6" on the x-axis and splitting the legend to address each line individually (*"splitting the legend" turned out to be something you don't care about, so never-mind on that), I needed to check the solutions video. Let's call this a 6/10. 
+```
+# Problem 2: Add a third variable (amount of reward given)
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tibble)
+slamecka_design_modded <- tibble(reward = rep(c("A:$0", "B:$50", "c:$1,000,000"), each = 9),
+                          practice = rep(rep(c(2,4,8), each = 3), 3),
+                          distraction = as.factor(rep(c(0,4,8), 9)),
+                          recall = c(5, 3, 1,
+                                     6, 4, 2,
+                                     7, 5, 3,
+                                     10, 8, 6,
+                                     11, 9, 7,
+                                     12, 10, 8,
+                                     15, 13, 11,
+                                     16, 14, 12,
+                                     17, 15, 13
+                                     )
+                          )
+
+ggplot(slamecka_design_modded, aes(x = practice,
+                                   group = distraction,
+                                   y = recall,
+                                   shape = distraction))+
+  geom_line()+
+  geom_point()+
+  theme_classic()+
+  scale_y_continuous(breaks = c(0, 5, 10, 15, 20), limits = c(0,20))+
+  scale_x_continuous(breaks = c(2, 4, 8))+
+  labs(y = "Recall", x = "Amount of Practice")+
+                     facet_wrap(~reward)
+
+# Struggle-report: While I think I know in theory how to add the "reward" variable, I don't think it's clear enough from the question exactly how I should be distributing/arranging/counterbalancing it (with "rep") to line up with the data. Trying not to spoil anything else while checking this in the video...Ok, I thought I'd be able to do it but needed to consult the video again. I know it must have something to do with facet-wrapping. 3/10, maaaybe 4/10 on help required here. 
+```
+#  Part 2: Follow-along with lab demonstration
+```{r}
+# Unpaired-samples t-test
+library(tibble)
+simple_design <- tibble(group = rep(c(0,1), each = 10),
+                       DV = c(1, 3, 2, 4, 3, 4, 5, 6, 5, 4, 5, 4, 3, 2, 3, 4, 5, 6, 8, 9))
+knitr::kable(simple_design)
+
+library(ggplot2)
+
+ggplot(simple_design, aes(x=group, y=DV))+
+  geom_bar(stat = "summary", fun = "mean", position = "dodge")+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)
+
+t.test(DV~group, var.equal=TRUE, data = simple_design)
+```
+#  Regression analysis on the same data, and contextualized version
+```{r}
+lm(DV~group, data=simple_design)
+summary(lm(DV~group, data=simple_design))
+
+recall_design <- tibble(practice = rep(c(2, 4, 8), each = 3),
+                        subjects = 1:9,
+                        recall = c(5, 7, 8, 
+                                   8, 10, 12,
+                                   12, 15, 17))
+knitr::kable(simple_design)
+
+ggplot(recall_design, aes(x=practice, y=recall))+
+  geom_bar(stat = "summary", fun = "mean", position = "dodge")+
+  geom_point()+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)
+
+summary(lm(recall~practice, data = recall_design))
+
+# Making it categorical rather than continuous
+recall_design$practice <- as.factor(recall_design$practice)
+
+ggplot(recall_design, aes(x=practice, y=recall))+
+  geom_bar(stat = "summary", fun = "mean", position = "dodge")+
+  geom_point()+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)
+
+summary(lm(recall~practice, data = recall_design))
+# The analysis as an ANOVA?
+summary(aov(recall~practice, data = recall_design))
+```
+#  Copying the Slamecka (1960) Design
+```{r}
+slamecka_design <- tibble(number_of_learning_trials = rep(c(2, 4, 8), each = 6),
+                          number_of_IL = rep(rep(c(2, 4, 8), 2), 3),
+                          subjects = 1:18,
+                          recall = c(35, 21, 6,
+                                     39, 51, 8,
+                                     40, 34, 18,
+                                     52, 42, 26,
+                                     61, 58, 46,
+                                     73, 66, 52
+                                     )
+                          )
+knitr::kable(slamecka_design)
+
+ggplot(slamecka_design, aes(x=number_of_IL,
+                            group = number_of_learning_trials,
+                            y = recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean")+
+  theme_classic()
+
+# Running the Analysis
+lm(recall~number_of_learning_trials + number_of_IL, data = slamecka_design)
+summary(lm(recall~number_of_learning_trials + number_of_IL, data = slamecka_design))
+
+ggplot(slamecka_design, aes(x=number_of_IL,
+                            group = number_of_learning_trials,
+                            y=recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean")+
+  theme_classic()
+
+slamecka_design$number_of_IL <- as.factor(slamecka_design$number_of_IL)
+
+ggplot(slamecka_design, aes(x = number_of_learning_trials,
+                            group = number_of_IL,
+                            y = recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean", aes(shape = number_of_IL))+
+  theme_classic()
+
+# Facet-wrapping
+ggplot(slamecka_design, aes(x = number_of_learning_trials,
+                            y = recall))+
+  geom_line(stat = "summary", fun = "mean")+
+  geom_point(stat = "summary", fun = "mean")+
+  theme_classic()+
+  facet_wrap(~number_of_IL)
+
+slamecka_design <- tibble(number_of_learning_trials = rep(c(2, 4, 8), each = 6),
+                          number_of_IL = rep(rep(c(2, 4, 8), 2), 3),
+                          subjects = rep(1:6, each = 3),
+                          recall = c(35, 21, 6,
+                                     39, 51, 8,
+                                     40, 34, 18,
+                                     52, 42, 26,
+                                     61, 58, 46,
+                                     73, 66, 52
+                                     )
+                          )
+knitr::kable(slamecka_design)
+
+ggplot(slamecka_design, aes(x = number_of_IL, 
+                            y = recall))+
+  geom_line()+
+  geom_point()+
+  theme_classic()+
+  facet_wrap(~number_of_learning_trials*subjects, ncol=2)
+```
+
+```{r setup}
+library(DBSStats2SemesterProject)
+```

@@ -22,327 +22,432 @@ knitr::opts_chunk$set(
 
 ### It is recommended that groups are code-named for anonymity of condition to avoid experimenter bias, along all steps of the immunohistochemistry process, if possible.  
 
-### For area percentage analyses, not split by plane (averages across all planes and uses unpaired-samples t-test):
+### See the "immuno.analyze" package for working versions of these functions. Documentation for this package is available at https://drseacow.github.io/immuno.analyze/ .
 
-  immunot_percent <- function(type, measure, region, first_group, second_group, n_per_group, data){
-  
+### Percent area analysis, averaging over coronal plane of tissue
+
+overall.percent.area <- function(graph_name, DV, first_group, second_group, n_per_group, data = x){
+
   library(stringr)
   library(dplyr)
   library(tidyr)
   library(ggplot2)
   library(patchwork)
-  
-    immunot_data <- as.data.frame(read.csv("percent_ps6_BLA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
-    
-      gp1_grand_mean <- mean(immunot_data[immunot_data$Group == 'Ctrl', 'X.Area'])
-      gp2_grand_mean <- mean(immunot_data[immunot_data$Group == 'Switch', 'X.Area'])
-      
-      gp1_grand_sterr <- sd(immunot_data[immunot_data$Group == 'Ctrl', 'X.Area']) / sqrt(6)
-      gp2_grand_sterr <- sd(immunot_data[immunot_data$Group == 'Switch', 'X.Area']) / sqrt(6)
-      
-      cross_plane_sterrs <- c(gp1_grand_sterr, gp2_grand_sterr)
-  
-    cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
-  
-    graph_df_without_plane <- tibble(Group = c("Ctrl", "Switch"),
-                                    Percent_PS6 = cross_plane_compare)
-                                    
-    ggplot(graph_df_without_plane, aes(x = Group, y = Percent_PS6)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Percent_PS6 - cross_plane_sterrs), ymax = (Percent_PS6 + cross_plane_sterrs)))
-    
-  gp1_grand_values <- c(immunot_data[immunot_data$Group == 'Ctrl', 'X.Area'])
-  gp2_grand_values <- c(immunot_data[immunot_data$Group == 'Switch', 'X.Area'])
-  
+
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
+
+  gp1_grand_mean <- mean(immunot_data[immunot_data$Group == first_group, 'X.Area'])
+  gp2_grand_mean <- mean(immunot_data[immunot_data$Group == second_group, 'X.Area'])
+
+  gp1_grand_sterr <- sd(immunot_data[immunot_data$Group == first_group, 'X.Area']) / sqrt(n_per_group)
+  gp2_grand_sterr <- sd(immunot_data[immunot_data$Group == second_group, 'X.Area']) / sqrt(n_per_group)
+
+  cross_plane_sterrs <- c(gp1_grand_sterr, gp2_grand_sterr)
+
+  cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
+
+  graph_df_without_plane <- tibble(Group = c(first_group, second_group),
+                                   DV = cross_plane_compare)
+
+  plot <- ggplot(graph_df_without_plane, aes(x = Group, y = DV, ylab = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - cross_plane_sterrs), ymax = (DV + cross_plane_sterrs))) +
+    ggtitle(graph_name) +
+    ylab(DV)
+
+  gp1_grand_values <- c(immunot_data[immunot_data$Group == first_group, 'X.Area'])
+  gp2_grand_values <- c(immunot_data[immunot_data$Group == second_group, 'X.Area'])
+
   overall_t <- t.test(gp1_grand_values, gp2_grand_values, var.equal = TRUE)
-  
-  overall_t
-  
-  ant_t <- t.test(immunot_data)
+
+  analysis_display <- print(overall_t)
+  analysis <- return(list(analysis_display, plot))
 
 }
 
-### For area percentage analyses, split by plane (this treats "plane" as a factor in two-way factorial ANOVA):
+### Percent area analyses, differentiating between three coronal planes of tissue
 
-  immunot_percent <- function(type, measure, region, first_group, n_per_group, data){
-  
+percent.area.plane <- function(graph_name_1, graph_name_2, graph_name_3, DV, first_group, second_group, n_per_group, data = x){
+
   library(stringr)
   library(dplyr)
   library(tidyr)
   library(ggplot2)
   library(patchwork)
-  
-    immunot_data <- as.data.frame(read.csv("percent_ps6_BLA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
-    
+
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
+
   means_by_plane <- tibble(aggregate(immunot_data$X.Area, FUN = mean, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
-  
+
   sds_by_plane <- tibble(aggregate(immunot_data$X.Area, FUN = sd, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
-  
-    gp1_mean_ant <- means_by_plane[1,3]
-    gp1_mean_med <- means_by_plane[2,3]
-    gp1_mean_pos <- means_by_plane[3,3]
-    gp2_mean_ant <- means_by_plane[4,3]
-    gp2_mean_med <- means_by_plane[5,3]
-    gp2_mean_pos <- means_by_plane[6,3]
-    
-    gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(6)
-    gp1_sterr_med <- sds_by_plane[2,3] / sqrt(6)
-    gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(6)
-    gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(6)
-    gp2_sterr_med <- sds_by_plane[5,3] / sqrt(6)
-    gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(6)
-  
+
+  gp1_ant <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Ant", ]
+  aa <- as.vector(t(gp1_ant %>% select(X.Area)))
+  gp2_ant <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Ant", ]
+  ab <- as.vector(t(gp2_ant %>% select(X.Area)))
+
+  gp1_med <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Med", ]
+  ba <- as.vector(t(gp1_med %>% select(X.Area)))
+  gp2_med <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Med", ]
+  bb <- as.vector(t(gp2_med %>% select(X.Area)))
+
+  gp1_pos <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Pos", ]
+  ca <- as.vector(t(gp1_pos %>% select(X.Area)))
+  gp2_pos <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Pos", ]
+  cb <- as.vector(t(gp2_pos %>% select(X.Area)))
+
+  gp1_mean_ant <- means_by_plane[1,3]
+  gp1_mean_med <- means_by_plane[2,3]
+  gp1_mean_pos <- means_by_plane[3,3]
+  gp2_mean_ant <- means_by_plane[4,3]
+  gp2_mean_med <- means_by_plane[5,3]
+  gp2_mean_pos <- means_by_plane[6,3]
+
+  gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(n_per_group)
+  gp1_sterr_med <- sds_by_plane[2,3] / sqrt(n_per_group)
+  gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(n_per_group)
+  gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(n_per_group)
+  gp2_sterr_med <- sds_by_plane[5,3] / sqrt(n_per_group)
+  gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(n_per_group)
+
   ant_compare <- as.numeric(c(gp1_mean_ant, gp2_mean_ant))
-  
+
   med_compare <- as.numeric(c(gp1_mean_med, gp2_mean_med))
-  
+
   pos_compare <- as.numeric(c(gp1_mean_pos, gp2_mean_pos))
-  
+
   ant_sterrs <- as.numeric(c(gp1_sterr_ant, gp2_sterr_ant))
-  
+
   med_sterrs <- as.numeric(c(gp1_sterr_med, gp2_sterr_med))
-  
+
   pos_sterrs <- as.numeric(c(gp1_sterr_pos, gp2_sterr_pos))
-    
-  graph_df_ant <- tibble(Ant = rep(c("Ctrl", "Switch")),
-                                    Percent_PS6 = ant_compare)
-                                    
-  graph_df_med <- tibble(Med = rep(c("Ctrl", "Switch")),
-                                    Percent_PS6 = med_compare)
-                                    
-  graph_df_pos <- tibble(Pos = rep(c("Ctrl", "Switch")),
-                                    Percent_PS6 = pos_compare)
-  
-    a <- ggplot(graph_df_ant, aes(x = Ant, y = Percent_PS6)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Percent_PS6 - ant_sterrs), ymax = (Percent_PS6 + ant_sterrs)))
-    m <- ggplot(graph_df_med, aes(x = Med, y = Percent_PS6)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Percent_PS6 - med_sterrs), ymax = (Percent_PS6 + med_sterrs)))
-    p <- ggplot(graph_df_pos, aes(x = Pos, y = Percent_PS6)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Percent_PS6 - pos_sterrs), ymax = (Percent_PS6 + pos_sterrs)))
-    
-    a+m+p
-  
-  plane_wise_anova <- summary(aov(X.Area ~ Plane*Group, data = immunot_data))
-  plane_wise_anova
+
+  graph_df_ant <- tibble(Ant = rep(c(first_group, second_group)),
+                         DV = ant_compare)
+
+  graph_df_med <- tibble(Med = rep(c(first_group, second_group)),
+                         DV = med_compare)
+
+  graph_df_pos <- tibble(Pos = rep(c(first_group, second_group)),
+                         DV = pos_compare)
+
+  a <- ggplot(graph_df_ant, aes(x = Ant, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - ant_sterrs), ymax = (DV + ant_sterrs))) +
+    ggtitle(graph_name_1) +
+    ylab(DV)
+  m <- ggplot(graph_df_med, aes(x = Med, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - med_sterrs), ymax = (DV + med_sterrs))) +
+    ggtitle(graph_name_2) +
+    ylab(DV)
+  p <- ggplot(graph_df_pos, aes(x = Pos, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - pos_sterrs), ymax = (DV + pos_sterrs))) +
+    ggtitle(graph_name_3) +
+    ylab(DV)
+
+  ant_t <- t.test(aa, ab, var.equal = TRUE)$p.value
+  med_t <- t.test(ba, bb, var.equal = TRUE)$p.value
+  pos_t <- t.test(ca, cb, var.equal = TRUE)$p.value
+
+  analysis_list <- c(ant_t, med_t, pos_t)
+  plot <- a+m+p
+
+  analysis <- return(list(analysis_list, plot))
 
 }
 
-### For cell count analyses, combined across planes
 
-  immunot_percent <- function(type, measure, region, first_group, n_per_group, data){
-  
+### Cell count analyses, averaging over coronal plane of tissue
+
+overall.cell.counts <- function(graph_name, DV, first_group, second_group, n_per_group, data = x){
+
   library(stringr)
   library(dplyr)
   library(tidyr)
   library(ggplot2)
   library(patchwork)
-  
-    immunot_data <- as.data.frame(read.csv("outline_VTA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
 
-    values_by_group <- tibble(aggregate(immunot_data$Plane, FUN = length, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group, immunot_data$Subject)))
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
 
-    values_by_group_avg_by_plane <- tibble(aggregate(values_by_group$x, FUN = mean, by = list(Group = values_by_group$Group, Subject = values_by_group$Group.3)))
+  values_by_group <- tibble(aggregate(immunot_data$Plane, FUN = length, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group, immunot_data$Subject)))
 
-gp1_values <- as.vector(values_by_group_avg_by_plane$x[values_by_group_avg_by_plane$Group == "Ctrl"])
-gp2_values <- as.vector(values_by_group_avg_by_plane$x[values_by_group_avg_by_plane$Group == "Switch"])
+  values_by_group_avg_by_plane <- tibble(aggregate(values_by_group$x, FUN = mean, by = list(Group = values_by_group$Group, Subject = values_by_group$Group.3)))
 
-      gp1_grand_mean <- sum(values_by_group_avg_by_plane[values_by_group_avg_by_plane$Group == 'Ctrl', 'x']) / 6 
-      gp2_grand_mean <- sum(values_by_group_avg_by_plane[values_by_group_avg_by_plane$Group == 'Switch', 'x']) / 6
-      
-      gp1_sterr <- sd(gp1_values) / sqrt(6) 
-      gp2_sterr <- sd(gp2_values) / sqrt(6)
-      
-      cross_plane_sds <- c(gp1_sterr, gp2_sterr)
-  
-    cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
-  
-    graph_df_without_plane <- tibble(Group = c("Ctrl", "Switch"),
-                                    Cells_Counted = cross_plane_compare)
-                                    
-    ggplot(graph_df_without_plane, aes(x = Group, y = Cells_Counted)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Cells_Counted - cross_plane_sds), ymax = (Cells_Counted + cross_plane_sds)))
+  gp1_values <- as.vector(values_by_group_avg_by_plane$x[values_by_group_avg_by_plane$Group == first_group])
+  gp2_values <- as.vector(values_by_group_avg_by_plane$x[values_by_group_avg_by_plane$Group == second_group])
 
-overall_t <- t.test(gp1_values, gp2_values, var.equal = TRUE)
-overall_t
-  
+  gp1_grand_mean <- sum(values_by_group_avg_by_plane[values_by_group_avg_by_plane$Group == first_group, 'x']) / n_per_group
+  gp2_grand_mean <- sum(values_by_group_avg_by_plane[values_by_group_avg_by_plane$Group == second_group, 'x']) / n_per_group
+
+  gp1_sterr <- sd(gp1_values) / sqrt(n_per_group)
+  gp2_sterr <- sd(gp2_values) / sqrt(n_per_group)
+
+  cross_plane_sds <- c(gp1_sterr, gp2_sterr)
+
+  cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
+
+  graph_df_without_plane <- tibble(Group = c(first_group, second_group),
+                                   DV = cross_plane_compare)
+
+  plot <- ggplot(graph_df_without_plane, aes(x = Group, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - cross_plane_sds), ymax = (DV + cross_plane_sds))) +
+    ggtitle(graph_name) +
+    ylab(DV)
+
+  overall_t <- t.test(gp1_values, gp2_values, var.equal = TRUE)
+  overall_t
+
+  analysis_display <- print(overall_t)
+  return(plot)
+
 }
 
-### For cell count analyses, split across planes
+### Cell count analyses, differentiating between three coronal planes of tissue
 
-  immunot_percent <- function(type, measure, region, first_group, data){
-  
+cell.counts.plane <- function(graph_name_1, graph_name_2, graph_name_3, DV, first_group, second_group, n_per_group, data = x){
+
   library(stringr)
   library(dplyr)
   library(tidyr)
   library(ggplot2)
   library(patchwork)
-  
-    immunot_data <- as.data.frame(read.csv("outline_VTA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
-  
+
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
+
   counts_by_plane <- tibble(aggregate(immunot_data$Plane, FUN = length, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group, immunot_data$Subject)))
-  
-gp1_ant <- counts_by_plane[counts_by_plane$Group == "Ctrl" & counts_by_plane$Plane == "Ant", ]
-  gp1_ant_values <- as.vector(t(gp1_ant %>% select(x)))
-gp2_ant <- counts_by_plane[counts_by_plane$Group == "Switch" & counts_by_plane$Plane == "Ant", ]
-  gp2_ant_values <- as.vector(t(gp2_ant %>% select(x)))
 
-gp1_med <- counts_by_plane[counts_by_plane$Group == "Ctrl" & counts_by_plane$Plane == "Med", ]
-  gp1_med_values <- as.vector(t(gp1_med %>% select(x)))
-gp2_med <- counts_by_plane[counts_by_plane$Group == "Switch" & counts_by_plane$Plane == "Med", ]
-  gp2_med_values <- as.vector(t(gp2_med %>% select(x)))
+  gp1_ant <- counts_by_plane[counts_by_plane$Group == first_group & counts_by_plane$Plane == "Ant", ]
+  aa <- as.vector(t(gp1_ant %>% select(x)))
+  gp2_ant <- counts_by_plane[counts_by_plane$Group == second_group & counts_by_plane$Plane == "Ant", ]
+  ab <- as.vector(t(gp2_ant %>% select(x)))
 
-gp1_pos <- counts_by_plane[counts_by_plane$Group == "Ctrl" & counts_by_plane$Plane == "Pos", ]
-  gp1_pos_values <- as.vector(t(gp1_pos %>% select(x)))
-gp2_pos <- counts_by_plane[counts_by_plane$Group == "Switch" & counts_by_plane$Plane == "Pos", ]
-  gp2_pos_values <- as.vector(t(gp2_pos %>% select(x)))
+  gp1_med <- counts_by_plane[counts_by_plane$Group == first_group & counts_by_plane$Plane == "Med", ]
+  ba <- as.vector(t(gp1_med %>% select(x)))
+  gp2_med <- counts_by_plane[counts_by_plane$Group == second_group & counts_by_plane$Plane == "Med", ]
+  bb <- as.vector(t(gp2_med %>% select(x)))
 
-plane_count_aov <- tibble(Group = rep(rep(c("gp1", "gp2"), each = 6), 3),
-                          Plane = rep(c("ant", "med", "pos"), each = 12),
-                          Counts = c(gp1_ant_values, gp2_ant_values, gp1_med_values, gp2_med_values, gp1_pos_values, gp2_pos_values)
-                          )
-  
+  gp1_pos <- counts_by_plane[counts_by_plane$Group == first_group & counts_by_plane$Plane == "Pos", ]
+  ca <- as.vector(t(gp1_pos %>% select(x)))
+  gp2_pos <- counts_by_plane[counts_by_plane$Group == second_group & counts_by_plane$Plane == "Pos", ]
+  cb <- as.vector(t(gp2_pos %>% select(x)))
+
+  plane_count <- tibble(Group = rep(rep(c("gp1", "gp2"), each = 6), 3),
+                        Plane = rep(c("ant", "med", "pos"), each = 12),
+                        Counts = c(aa, ab, ba, bb, ca, cb)
+  )
+
   means_by_plane <- aggregate(counts_by_plane$x, FUN = mean, by = list(Plane = counts_by_plane$Plane, Group = counts_by_plane$Group))
-  
+
   sds_by_plane <- tibble(aggregate(counts_by_plane$x, FUN = sd, by = list(Plane = counts_by_plane$Plane, Group = counts_by_plane$Group)))
-  
-    gp1_mean_ant <- means_by_plane[1,3]
-    gp1_mean_med <- means_by_plane[2,3]
-    gp1_mean_pos <- means_by_plane[3,3]
-    gp2_mean_ant <- means_by_plane[4,3]
-    gp2_mean_med <- means_by_plane[5,3]
-    gp2_mean_pos <- means_by_plane[6,3]
-    
-    gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(length(gp1_ant_values))
-    gp1_sterr_med <- sds_by_plane[2,3] / sqrt(length(gp1_med_values))
-    gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(length(gp1_pos_values))
-    gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(length(gp2_ant_values))
-    gp2_sterr_med <- sds_by_plane[5,3] / sqrt(length(gp2_med_values))
-    gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(length(gp2_pos_values))
-  
-  ant_compare <- as.numeric(c(gp1_mean_ant, gp2_mean_ant))
-  
-  med_compare <- as.numeric(c(gp1_mean_med, gp2_mean_med))
-  
-  pos_compare <- as.numeric(c(gp1_mean_pos, gp2_mean_pos))
-  
+
+  gp1_mean_ant <- means_by_plane[1,3]
+  gp1_mean_med <- means_by_plane[2,3]
+  gp1_mean_pos <- means_by_plane[3,3]
+  gp2_mean_ant <- means_by_plane[4,3]
+  gp2_mean_med <- means_by_plane[5,3]
+  gp2_mean_pos <- means_by_plane[6,3]
+
+  gp1_sterr_ant <- as.numeric(sds_by_plane[1,3]) / sqrt(length(n_per_group))
+  gp1_sterr_med <- as.numeric(sds_by_plane[2,3]) / sqrt(length(n_per_group))
+  gp1_sterr_pos <- as.numeric(sds_by_plane[3,3]) / sqrt(length(n_per_group))
+  gp2_sterr_ant <- as.numeric(sds_by_plane[4,3]) / sqrt(length(n_per_group))
+  gp2_sterr_med <- as.numeric(sds_by_plane[5,3]) / sqrt(length(n_per_group))
+  gp2_sterr_pos <- as.numeric(sds_by_plane[6,3]) / sqrt(length(n_per_group))
+
+  ant_compare <- c(gp1_mean_ant, gp2_mean_ant)
+
+  med_compare <- c(gp1_mean_med, gp2_mean_med)
+
+  pos_compare <- c(gp1_mean_pos, gp2_mean_pos)
+
   ant_sterrs <- as.numeric(c(gp1_sterr_ant, gp2_sterr_ant))
-  
+
   med_sterrs <- as.numeric(c(gp1_sterr_med, gp2_sterr_med))
-  
+
   pos_sterrs <- as.numeric(c(gp1_sterr_pos, gp2_sterr_pos))
-    
-  graph_df_ant <- tibble(Ant = rep(c("Ctrl", "Switch")),
-                                    Cells_Counted = ant_compare)
-                                    
-  graph_df_med <- tibble(Med = rep(c("Ctrl", "Switch")),
-                                    Cells_Counted = med_compare)
-                                    
-  graph_df_pos <- tibble(Pos = rep(c("Ctrl", "Switch")),
-                                    Cells_Counted = pos_compare)
-  
-    a <- ggplot(graph_df_ant, aes(x = Ant, y = Cells_Counted)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Cells_Counted - ant_sterrs), ymax = (Cells_Counted + ant_sterrs)))
-    m <- ggplot(graph_df_med, aes(x = Med, y = Cells_Counted)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Cells_Counted - med_sterrs), ymax = (Cells_Counted + med_sterrs)))
-    p <- ggplot(graph_df_pos, aes(x = Pos, y = Cells_Counted)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Cells_Counted - pos_sterrs), ymax = (Cells_Counted + pos_sterrs)))
-    
-    a+m+p
 
-plane_wise_anova <- summary(aov(Counts ~ Plane*Group, data = plane_count_aov))
-  plane_wise_anova
-  
+  graph_df_ant <- tibble(Ant = rep(c(first_group, second_group)),
+                         DV = ant_compare)
+
+  graph_df_med <- tibble(Med = rep(c(first_group, second_group)),
+                         DV = med_compare)
+
+  graph_df_pos <- tibble(Pos = rep(c(first_group, second_group)),
+                         DV = pos_compare)
+
+  a <- ggplot(graph_df_ant, aes(x = Ant, y = ant_compare)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (ant_compare - ant_sterrs), ymax = (ant_compare + ant_sterrs))) +
+    ggtitle(graph_name_1) +
+    ylab(DV)
+
+  m <- ggplot(graph_df_med, aes(x = Med, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (med_compare - med_sterrs), ymax = (med_compare + med_sterrs))) +
+    ggtitle(graph_name_2) +
+    ylab(DV)
+
+  p <- ggplot(graph_df_pos, aes(x = Pos, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (pos_compare - pos_sterrs), ymax = (pos_compare + pos_sterrs))) +
+    ggtitle(graph_name_3) +
+    ylab(DV)
+
+  ant_t <- t.test(aa, ab, var.equal = TRUE)
+  med_t <- t.test(ba, bb, var.equal = TRUE)
+  pos_t <- t.test(ca, cb, var.equal = TRUE)
+
+  analysis_list <- c(ant_t$p.value, med_t$p.value, pos_t$p.value)
+
+  plot <- a+m+p
+
+  return(list(analysis_list, plot))
+
 }
 
-### For intensity analyses, combined across planes
 
-   immunot_percent <- function(type, measure, region, first_group, n_per_group, data){
-  
-    immunot_data <- as.data.frame(read.csv("outline_VTA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
-    
-      gp1_grand_mean <- mean(immunot_data[immunot_data$Group == 'Ctrl', 'Mean'])
-      gp2_grand_mean <- mean(immunot_data[immunot_data$Group == 'Switch', 'Mean'])
-      
-      gp1_grand_sterr <- sd(immunot_data[immunot_data$Group == 'Ctrl', 'Mean']) / sqrt(length(immunot_data[immunot_data$Group == 'Ctrl', 'Mean']))
-      gp2_grand_sterr <- sd(immunot_data[immunot_data$Group == 'Switch', 'Mean']) / sqrt(length(immunot_data[immunot_data$Group == 'Switch', 'Mean']))
-      
-      cross_plane_sterr <- c(gp1_grand_sterr, gp2_grand_sterr)
-  
-    cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
-  
-    graph_df_without_plane <- tibble(Group = c("Ctrl", "Switch"),
-                                    Intensity = cross_plane_compare)
-                                    
-    ggplot(graph_df_without_plane, aes(x = Group, y = Intensity)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Intensity - cross_plane_sterr), ymax = (Intensity + cross_plane_sterr)))
-    
-values_by_group <- tibble(aggregate(immunot_data$Mean, FUN = mean, by = list(Group = immunot_data$Group, Subject = immunot_data$Subject)))
+### Mean cell intensity analyses, averging over coronal plane of tissue
 
-values_by_group_avg_by_plane <- tibble(aggregate(values_by_group$x, FUN = mean, by = list(Group = values_by_group$Group, Subject = values_by_group$Group.3)))
+overall.intensity <- function(graph_name, DV, first_group, second_group, n_per_group, data = x){
 
-gp1_values <- as.vector(values_by_group$x[values_by_group$Group == "Ctrl"])
-gp2_values <- as.vector(values_by_group$x[values_by_group$Group == "Switch"])
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
 
-overall_t <- t.test(gp1_values, gp2_values, var.equal = TRUE)
-overall_t
-  
+  gp1_grand_mean <- mean(immunot_data[immunot_data$Group == first_group, 'Mean'])
+  gp2_grand_mean <- mean(immunot_data[immunot_data$Group == second_group, 'Mean'])
+
+  gp1_grand_sterr <- sd(immunot_data[immunot_data$Group == first_group, 'Mean']) / sqrt(n_per_group)
+  gp2_grand_sterr <- sd(immunot_data[immunot_data$Group == second_group, 'Mean']) / sqrt(n_per_group)
+
+  cross_plane_sterr <- c(gp1_grand_sterr, gp2_grand_sterr)
+
+  cross_plane_compare <- as.numeric(c(gp1_grand_mean, gp2_grand_mean))
+
+  graph_df_without_plane <- tibble(Group = c(first_group, second_group),
+                                   DV = cross_plane_compare)
+
+  plot <- ggplot(graph_df_without_plane, aes(x = Group, y = cross_plane_compare)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (cross_plane_compare - cross_plane_sterr), ymax = (cross_plane_compare + cross_plane_sterr))) +
+    ggtitle(graph_name) +
+    ylab(DV)
+
+  values_by_group <- tibble(aggregate(immunot_data$Mean, FUN = mean, by = list(Group = immunot_data$Group, Subject = immunot_data$Subject)))
+
+  values_by_group_avg_by_plane <- tibble(aggregate(values_by_group$x, FUN = mean, by = list(Group = values_by_group$Group, Subject = values_by_group$Subject)))
+
+  gp1_values <- as.vector(values_by_group$x[values_by_group$Group == first_group])
+  gp2_values <- as.vector(values_by_group$x[values_by_group$Group == second_group])
+
+  overall_t <- t.test(gp1_values, gp2_values, var.equal = TRUE)
+  return(list(overall_t, plot))
+
 }
 
-### For intensity analyses, split across planes
 
- immunot_percent <- function(type, measure, region, first_group, data){
-  
-    immunot_data <- as.data.frame(read.csv("percent_ps6_BLA.csv", header = TRUE, sep = ",", dec = ".")) %>%
-      select(c("Label", "Mean", "X.Area")) 
-    immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
-    
+### Mean cell intensity analyses, differentiating between three coronal planes of tissue
+
+intensity.plane <- function(graph_name_1, graph_name_2, graph_name_3, DV, first_group, second_group, n_per_group, data = x){
+
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA), "_")
+
   means_by_plane <- tibble(aggregate(immunot_data$Mean, FUN = mean, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
-  
+
   sds_by_plane <- tibble(aggregate(immunot_data$Mean, FUN = sd, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
-  
-    gp1_mean_ant <- means_by_plane[1,3]
-    gp1_mean_med <- means_by_plane[2,3]
-    gp1_mean_pos <- means_by_plane[3,3]
-    gp2_mean_ant <- means_by_plane[4,3]
-    gp2_mean_med <- means_by_plane[5,3]
-    gp2_mean_pos <- means_by_plane[6,3]
-    
-    gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(6)
-    gp1_sterr_med <- sds_by_plane[2,3] / sqrt(6)
-    gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(6)
-    gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(6)
-    gp2_sterr_med <- sds_by_plane[5,3] / sqrt(6)
-    gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(6)
-  
+
+  values_by_plane <- tibble(aggregate(immunot_data$Mean, FUN = mean, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group, Subject = immunot_data$Subject)))
+
+  gp1_ant <-   values_by_plane[values_by_plane$Group == first_group & values_by_plane$Plane == "Ant", ]
+  aa <- as.vector(t(gp1_ant %>% select(x)))
+  gp2_ant <-   values_by_plane[values_by_plane$Group == second_group & values_by_plane$Plane == "Ant", ]
+  ab <- as.vector(t(gp2_ant %>% select(x)))
+
+  gp1_med <-   values_by_plane[values_by_plane$Group == first_group & values_by_plane$Plane == "Med", ]
+  ba <- as.vector(t(gp1_med %>% select(x)))
+  gp2_med <-   values_by_plane[values_by_plane$Group == second_group &  values_by_plane$Plane == "Med", ]
+  bb <- as.vector(t(gp2_med %>% select(x)))
+
+  gp1_pos <-   values_by_plane[values_by_plane$Group == first_group & values_by_plane$Plane == "Pos", ]
+  ca <- as.vector(t(gp1_pos %>% select(x)))
+  gp2_pos <-   values_by_plane[values_by_plane$Group == second_group &  values_by_plane$Plane == "Pos", ]
+  cb <- as.vector(t(gp2_pos %>% select(x)))
+
+  gp1_mean_ant <- means_by_plane[1,3]
+  gp1_mean_med <- means_by_plane[2,3]
+  gp1_mean_pos <- means_by_plane[3,3]
+  gp2_mean_ant <- means_by_plane[4,3]
+  gp2_mean_med <- means_by_plane[5,3]
+  gp2_mean_pos <- means_by_plane[6,3]
+
+  gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(n_per_group)
+  gp1_sterr_med <- sds_by_plane[2,3] / sqrt(n_per_group)
+  gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(n_per_group)
+  gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(n_per_group)
+  gp2_sterr_med <- sds_by_plane[5,3] / sqrt(n_per_group)
+  gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(n_per_group)
+
   ant_compare <- as.numeric(c(gp1_mean_ant, gp2_mean_ant))
-  
+
   med_compare <- as.numeric(c(gp1_mean_med, gp2_mean_med))
-  
+
   pos_compare <- as.numeric(c(gp1_mean_pos, gp2_mean_pos))
-  
+
   ant_sterrs <- as.numeric(c(gp1_sterr_ant, gp2_sterr_ant))
-  
+
   med_sterrs <- as.numeric(c(gp1_sterr_med, gp2_sterr_med))
-  
+
   pos_sterrs <- as.numeric(c(gp1_sterr_pos, gp2_sterr_pos))
-    
-  graph_df_ant <- tibble(Ant = rep(c("Ctrl", "Switch")),
-                                    Intensity = ant_compare)
-                                    
-  graph_df_med <- tibble(Med = rep(c("Ctrl", "Switch")),
-                                    Intensity = med_compare)
-                                    
-  graph_df_pos <- tibble(Pos = rep(c("Ctrl", "Switch")),
-                                    Intensity = pos_compare)
-  
-    a <- ggplot(graph_df_ant, aes(x = Ant, y = Intensity)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Intensity - ant_sterrs), ymax = (Intensity + ant_sterrs)))
-    m <- ggplot(graph_df_med, aes(x = Med, y = Intensity)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Intensity - med_sterrs), ymax = (Intensity + med_sterrs)))
-    p <- ggplot(graph_df_pos, aes(x = Pos, y = Intensity)) + geom_bar(stat = "identity") + geom_errorbar(aes(ymin = (Intensity - pos_sterrs), ymax = (Intensity + pos_sterrs)))
-    
-    a+m+p
-  
-  plane_wise_anova <- summary(aov(Mean ~ Plane*Group, data = immunot_data))
-  plane_wise_anova
+
+  graph_df_ant <- tibble(Ant = rep(c(first_group, second_group)),
+                         DV = ant_compare)
+
+  graph_df_med <- tibble(Med = rep(c(first_group, second_group)),
+                         DV = med_compare)
+
+  graph_df_pos <- tibble(Pos = rep(c(first_group, second_group)),
+                         DV = pos_compare)
+
+  a <- ggplot(graph_df_ant, aes(x = Ant, y = ant_compare)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (ant_compare - ant_sterrs), ymax = (ant_compare + ant_sterrs))) +
+    ggtitle(graph_name_1) +
+    ylab(DV)
+
+  m <- ggplot(graph_df_med, aes(x = Med, y = med_compare)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (med_compare - med_sterrs), ymax = (med_compare + med_sterrs))) +
+    ggtitle(graph_name_2) +
+    ylab(DV)
+
+  p <- ggplot(graph_df_pos, aes(x = Pos, y = pos_compare)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (pos_compare - pos_sterrs), ymax = (pos_compare + pos_sterrs))) +
+    ggtitle(graph_name_3) +
+    ylab(DV)
+
+  ant_t <- t.test(aa, ab, var.equal = TRUE)
+  med_t <- t.test(ba, bb, var.equal = TRUE)
+  pos_t <- t.test(ca, cb, var.equal = TRUE)
+
+  analysis_list <- c(ant_t$p.value, med_t$p.value, pos_t$p.value)
+
+  plot <- a+m+p
+
+  return(list(analysis_list, plot))
 
 }
 

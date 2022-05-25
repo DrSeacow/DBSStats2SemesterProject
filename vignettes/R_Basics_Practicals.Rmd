@@ -27,12 +27,10 @@ mean(vector_example)
 ## Data frame, with the average for one level of a particular variable
 
 ```{r}
-
-colors <- as.character(c(rep("blue", "red", "yellow", "purple", "green"), each = 2))
-
 data_frame_example <- data.frame(colors = c("blue", "blue", "red", "red", "yellow", "yellow", "purple", "purple", "green", "green"),
                                 congruency = c("congruent", "incongruent", "congruent", "incongruent", "congruent", "incongruent","congruent", "incongruent", "congruent", "incongruent"),
                                 data = c(35, 49, 21, 92, 54, 17, 38, 43, 20, 31))
+data_frame_example
 ```
 
 ### Congruent mean
@@ -91,16 +89,210 @@ for(i in 0:20){
 
 ```
 
-### Using a "while" loop for the same exact purpose; also demonstrating 
+### Using a "while" loop to demonstrate the same concept; this section also demonstrates use of breaks within loops. 
 
 ```{r}
-breakpoint <- 20
-while(i <= 20){
-  pretend_F_ratio <- ((rnorm(1, 0, 0.5)^2)) / (rnorm(1, 0, 0.5)*i)
-  if((pretend_F_ratio) < 0.05){
+rand_data <- 5
+i <- 1
+while(i <= 100){
+  pretend_F_ratio <- (rand_data) / (rand_data+i)
+  if((pretend_F_ratio) < 0.3){
     break
   }
   print(pretend_F_ratio)
+  i  <- i+1
+}
+
+```
+
+## Demonstrating simple logic
+### With a vector
+
+```{r}
+example_vector <- c(rnorm(20, 0, 1))
+
+negative_values <- example_vector[example_vector < 0]
+positive_values <- example_vector[example_vector > 0]
+
+negative_values
+```
+
+```{r}
+positive_values
+```
+
+### With a dataframe
+
+```{r}
+data_frame_example <- data.frame(colors = c("blue", "blue", "red", "red", "yellow", "yellow", "purple", "purple", "green", "green"),
+                                congruency = c("congruent", "incongruent", "congruent", "incongruent", "congruent", "incongruent","congruent", "incongruent", "congruent", "incongruent"),
+                                data = c(35, 49, 21, 92, 54, 17, 38, 43, 20, 31))
+
+incongruent_values <- c(data_frame_example$data[data_frame_example$congruency == "incongruent"])
+incongruent_values
+```
+
+## Combining loops and logic to solve the "Fizz-Buzz" problem
+
+```{r}
+fizzy_buzzy <- vector()
+for(i in 1:100){
+  if(i%%3 && i%%5 == 0){
+    fizzy_buzzy[i] <- "fizzbuzz"
+  } else if (i%%3 == 0){
+    fizzy_buzzy[i] <- "fizz"
+  } else if (i%%5 == 0){
+    fizzy_buzzy[i] <- "buzz"
+  } else {
+    fizzy_buzzy[i] <- i
+  }
+}
+print(fizzy_buzzy)
+```
+
+## Advanced problem of choice: Problem 3 - Testing the Random Number Generator
+
+```{r}
+
+freq <- runif(5000000, 0, 101)
+frequencies <- tabulate(freq)
+frequency_table <- tibble(Values = 1:100,
+                          Frequencies = frequencies)
+frequency_table
+```
+
+```{r}
+frequency_max <- frequency_table[frequency_table$Values == 100, ]
+  max_frequency <- as.numeric(frequency_max %>% select(Frequencies))
+  
+frequency_min <- frequency_table[frequency_table$Values == 1, ]
+  min_frequency <- as.numeric(frequency_min %>% select(Frequencies))
+  
+frequency_range <- (max_frequency - min_frequency)
+frequency_range
+```
+```{r}
+mean(frequency_table$Frequencies)
+```
+```{r}
+hist(a)
+```
+### The mean is close to most values in the dataset, the range is quite small (<10% of most values), and the histogram is quite flat (although, inexplicably, the random number generator does indeed seems to be biased away from selecting the number 100, specifically). I considered running a one-sample T-Test, but it occurred to me that the process of identifying the null hypothesis population mean would require circular reasoning, and this question only required a descriptive characterization of the distribution. 
+
+# Question 6: Functions in the Package 
+
+## I have produced six functions comprising the new "immuno.analyze" package. Documentation for this package can be found under the "references" tab of this website, and at the website created for this package available at https://drseacow.github.io/immuno.analyze/ . 
+
+## The entire set of working code for all six functions can be found in the "Final_Lab_WYOR" script, available under the "articles" tab. For direct reference, the working code for the function demonstrated below can be found at the end of this document. 
+
+### Here, I will demonstrate just the second function: percent.area.plane. This function loads a .CSV file, organizes the data according to two factors (2x3, group by coronal plane of brain tissue imaged and analyzed), generating three side-by-side plots comparing the groups across each of the second factor, and outputting a vector containing the P-Values for the three corresponding unpaired-samples T-Tests. 
+
+### Imaging data .CSV files are assumed to use a particular naming format, and to be derived from a "Custom Macros" plugin for the image analysis program ImageJ; this plugin extracts various forms of imaging data pertaining to characteristics of fluorescence-immunolabeled cells. The other functions in the "immuno.analyze" package cover two other forms of data, and can be used to average across the second factor.
+
+```{r}
+library(immuno.analyze)
+
+immuno.analyze::percent.area.plane("PS6_%Area_BLA_Ant", "Med", "Pos", "PS6_Area_Percent", "Ctrl", "Switch", 6, "percent_ps6_BLA.csv")
+```
+# Question 7: Something that "future-me" will thank myself for
+
+### While I'm not sure this is allowed: I will opt to combine this question with question 6. I made six different functions because I saw this as an opportunity to do the one thing in R that I've always wanted to do- something that will save me countless hours across every one of my own experiments. Automating the data-analysis work-flow in my immunolabeling analysis experiments by authoring the immuno.analyze package has always been my #1 biggest goal in learning how to code with R, and indeed, my main incentive for learning it (or, perhaps controversially, my main reason for taking this class!) and there is absolutely no question I will be thanking myself in the future (I already am!).
+
+### Although this may have been intended as an entirely standalone question from question 6, do consider that the six functions written are different in key ways. I hope the variety within my package accounts for the more unique elements to this question. 
+
+### Working code for the "percent.area.plane" function of my "immuno.analyze" package. 
+```{r}
+percent.area.plane <- function(graph_name_1, graph_name_2, graph_name_3, DV, first_group, second_group, n_per_group, data = x){
+
+  library(stringr)
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
+  library(patchwork)
+
+  immunot_data <- as.data.frame(read.csv(data, header = TRUE, sep = ",", dec = ".")) %>%
+    select(c("Label", "Mean", "X.Area"))
+  immunot_data <- separate(immunot_data, "Label", c("Group", NA, "Subject", NA, "Plane", "Side", NA, NA, NA, NA, NA, NA), "_")
+
+  means_by_plane <- tibble(aggregate(immunot_data$X.Area, FUN = mean, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
+
+  sds_by_plane <- tibble(aggregate(immunot_data$X.Area, FUN = sd, by = list(Plane = immunot_data$Plane, Group = immunot_data$Group)))
+
+  gp1_ant <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Ant", ]
+  aa <- as.vector(t(gp1_ant %>% select(X.Area)))
+  gp2_ant <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Ant", ]
+  ab <- as.vector(t(gp2_ant %>% select(X.Area)))
+
+  gp1_med <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Med", ]
+  ba <- as.vector(t(gp1_med %>% select(X.Area)))
+  gp2_med <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Med", ]
+  bb <- as.vector(t(gp2_med %>% select(X.Area)))
+
+  gp1_pos <- immunot_data[immunot_data$Group == first_group & immunot_data$Plane == "Pos", ]
+  ca <- as.vector(t(gp1_pos %>% select(X.Area)))
+  gp2_pos <- immunot_data[immunot_data$Group == second_group & immunot_data$Plane == "Pos", ]
+  cb <- as.vector(t(gp2_pos %>% select(X.Area)))
+
+  gp1_mean_ant <- means_by_plane[1,3]
+  gp1_mean_med <- means_by_plane[2,3]
+  gp1_mean_pos <- means_by_plane[3,3]
+  gp2_mean_ant <- means_by_plane[4,3]
+  gp2_mean_med <- means_by_plane[5,3]
+  gp2_mean_pos <- means_by_plane[6,3]
+
+  gp1_sterr_ant <- sds_by_plane[1,3] / sqrt(n_per_group)
+  gp1_sterr_med <- sds_by_plane[2,3] / sqrt(n_per_group)
+  gp1_sterr_pos <- sds_by_plane[3,3] / sqrt(n_per_group)
+  gp2_sterr_ant <- sds_by_plane[4,3] / sqrt(n_per_group)
+  gp2_sterr_med <- sds_by_plane[5,3] / sqrt(n_per_group)
+  gp2_sterr_pos <- sds_by_plane[6,3] / sqrt(n_per_group)
+
+  ant_compare <- as.numeric(c(gp1_mean_ant, gp2_mean_ant))
+
+  med_compare <- as.numeric(c(gp1_mean_med, gp2_mean_med))
+
+  pos_compare <- as.numeric(c(gp1_mean_pos, gp2_mean_pos))
+
+  ant_sterrs <- as.numeric(c(gp1_sterr_ant, gp2_sterr_ant))
+
+  med_sterrs <- as.numeric(c(gp1_sterr_med, gp2_sterr_med))
+
+  pos_sterrs <- as.numeric(c(gp1_sterr_pos, gp2_sterr_pos))
+
+  graph_df_ant <- tibble(Ant = rep(c(first_group, second_group)),
+                         DV = ant_compare)
+
+  graph_df_med <- tibble(Med = rep(c(first_group, second_group)),
+                         DV = med_compare)
+
+  graph_df_pos <- tibble(Pos = rep(c(first_group, second_group)),
+                         DV = pos_compare)
+
+  a <- ggplot(graph_df_ant, aes(x = Ant, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - ant_sterrs), ymax = (DV + ant_sterrs))) +
+    ggtitle(graph_name_1) +
+    ylab(DV)
+  m <- ggplot(graph_df_med, aes(x = Med, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - med_sterrs), ymax = (DV + med_sterrs))) +
+    ggtitle(graph_name_2) +
+    ylab(DV)
+  p <- ggplot(graph_df_pos, aes(x = Pos, y = DV)) +
+    geom_bar(stat = "identity") +
+    geom_errorbar(aes(ymin = (DV - pos_sterrs), ymax = (DV + pos_sterrs))) +
+    ggtitle(graph_name_3) +
+    ylab(DV)
+
+  ant_t <- t.test(aa, ab, var.equal = TRUE)$p.value
+  med_t <- t.test(ba, bb, var.equal = TRUE)$p.value
+  pos_t <- t.test(ca, cb, var.equal = TRUE)$p.value
+
+  analysis_list <- c(ant_t, med_t, pos_t)
+  plot <- a+m+p
+
+  analysis <- return(list(analysis_list, plot))
+
 }
 
 ```

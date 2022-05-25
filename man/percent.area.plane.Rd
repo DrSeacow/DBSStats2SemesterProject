@@ -49,9 +49,11 @@ All parameters must be in quotations, besides "n_per_group." The .CSV files to b
 When imaging your tissue initially, it is critical that the output filenames are saved in the following format: GroupName_ExperimentName_SubjectNumber_MagnificationX_CoronalPlane_SideOfTissue_RegionOfTissue
 
 To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment.
+
+Note that this documentation does not allow loading of an example dataset, so the example below does not display properly. See the intro slideshow, or the "R Basics" article, for a working example.
 }
 \examples{
-percent.area.plane("percent_ps6_BLA_ant", "med", "pos", "percent", "Ctrl", "Switch", 6, data = "percent_ps6_BLA.csv")
+immuno.analyze::percent.area.plane("percent_ps6_BLA_ant", "med", "pos", "percent", "Ctrl", "Switch", 6, data = "percent_ps6_BLA.csv")
 
 }
 \references{

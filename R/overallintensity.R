@@ -16,6 +16,8 @@
 #'
 #' To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment.
 #'
+#' Note that this documentation does not allow loading of an example dataset, so the example below does not display properly. See the intro slideshow, or the "R Basics" article, for a working example.
+#'
 #' @param graph_name The title of the output barplot.
 #' @param DV The dependent variable used for the analysis. Should denote the cell type, tissue type or region, and/or wavelength analyzed.
 #' @param first_group How one of your groups is codified. Note: When imaging tissue for processing, this string must be put at the beginning of the saved filenames.

@@ -5,7 +5,8 @@ Can only be used to analyze one wavelength per analysis. This R function identif
 It is generally recommended that images are taken and analyzed from multiple coronal planes of brain tissue. This particular function differentiates between the anterior, middle, and posterior planes and analyzes them separately, using 'patchwork' to display three barplots and vectorizing the P-values from the T-Tests as the anterior comparison P-Value, middle comparison P-Value, and posterior comparison P-Value, respectively.
 All parameters must be in quotations, besides &quot;n_per_group.&quot; The .CSV files to be analyzed must be placed in your working directory.
 When imaging your tissue initially, it is critical that the output filenames are saved in the following format: GroupName_ExperimentName_SubjectNumber_MagnificationX_CoronalPlane_SideOfTissue_RegionOfTissue
-To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment.
+Note that this documentation does not allow loading of an example dataset, so the example below does not display properly. See the intro slideshow, or the &quot;R Basics&quot; article, for a working example."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -105,6 +106,7 @@ To mitigate experimenter bias (throughout all stages of the experimental process
 <p>All parameters must be in quotations, besides "n_per_group." The .CSV files to be analyzed must be placed in your working directory.</p>
 <p>When imaging your tissue initially, it is critical that the output filenames are saved in the following format: GroupName_ExperimentName_SubjectNumber_MagnificationX_CoronalPlane_SideOfTissue_RegionOfTissue</p>
 <p>To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment.</p>
+<p>Note that this documentation does not allow loading of an example dataset, so the example below does not display properly. See the intro slideshow, or the "R Basics" article, for a working example.</p>
     </div>
 
     <div id="ref-usage">
@@ -150,7 +152,7 @@ To mitigate experimenter bias (throughout all stages of the experimental process
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">intensity.plane</span><span class="op">(</span><span class="st">"VTA_Intensity_ant"</span>, <span class="st">"med"</span>, <span class="st">"pos"</span>, <span class="st">"Cell_Counts"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Switch"</span>, <span class="fl">6</span>, data <span class="op">=</span> <span class="st">"outline_VTA.csv"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">immuno.analyze</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/immuno.analyze/man/intensity.plane.html" class="external-link">intensity.plane</a></span><span class="op">(</span><span class="st">"VTA_Intensity_ant"</span>, <span class="st">"med"</span>, <span class="st">"pos"</span>, <span class="st">"Cell_Counts"</span>, <span class="st">"Ctrl"</span>, <span class="st">"Switch"</span>, <span class="fl">6</span>, data <span class="op">=</span> <span class="st">"outline_VTA.csv"</span><span class="op">)</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file 'outline_VTA.csv': No such file or directory</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in file(file, "rt"):</span> cannot open the connection</span>
 <span class="r-in"></span>

@@ -16,6 +16,8 @@
 #'
 #' To mitigate experimenter bias (throughout all stages of the experimental process, but including this one) it is recommended that the group names are codified in a way agnostic to experimental treatment.
 #'
+#' Note that this documentation does not allow loading of an example dataset, so the example below does not display properly. See the intro slideshow, or the "R Basics" article, for a working example.
+#'
 #' @param graph_name_1 The title of the output barplot for the analysis of your "anterior" sections.
 #' @param graph_name_2 The title of the output barplot for the analysis of your "middle" sections.
 #' @param graph_name_3 The title of the output barplot for the analysis of your "posterior" sections.

@@ -197,6 +197,7 @@ library(immuno.analyze)
 
 immuno.analyze::percent.area.plane("PS6_%Area_BLA_Ant", "Med", "Pos", "PS6_Area_Percent", "Ctrl", "Switch", 6, "percent_ps6_BLA.csv")
 ```
+
 # Question 7: Something that "future-me" will thank myself for
 
 ### While I'm not sure this is allowed: I will opt to combine this question with question 6. I made six different functions because I saw this as an opportunity to do the one thing in R that I've always wanted to do- something that will save me countless hours across every one of my own experiments. Automating the data-analysis work-flow in my immunolabeling analysis experiments by authoring the immuno.analyze package has always been my #1 biggest goal in learning how to code with R, and indeed, my main incentive for learning it (or, perhaps controversially, my main reason for taking this class!) and there is absolutely no question I will be thanking myself in the future (I already am!).

@@ -208,7 +208,7 @@
 
 <span class="va">means_of_second_col_and_sixth_row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">second_col_mean</span>, <span class="va">sixth_row_mean</span><span class="op">)</span>
 <span class="va">means_of_second_col_and_sixth_row</span>
-<span class="co">#&gt; [1]  0.02234241 -0.14490277</span></code></pre></div>
+<span class="co">#&gt; [1] -0.5590355  0.6198263</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -224,27 +224,27 @@
  <span class="va">pretend_F_ratio</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">i</span><span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pretend_F_ratio</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="co">#&gt; [1] 0.6532718</span>
-<span class="co">#&gt; [1] -0.5075958</span>
-<span class="co">#&gt; [1] 0.2472334</span>
-<span class="co">#&gt; [1] 0.4938525</span>
-<span class="co">#&gt; [1] 0.4035242</span>
-<span class="co">#&gt; [1] 0.1601626</span>
-<span class="co">#&gt; [1] 0.2810977</span>
-<span class="co">#&gt; [1] 0.1052375</span>
-<span class="co">#&gt; [1] 0.1877252</span>
-<span class="co">#&gt; [1] 0.06298961</span>
-<span class="co">#&gt; [1] 0.07473424</span>
-<span class="co">#&gt; [1] 0.08528014</span>
-<span class="co">#&gt; [1] 0.08561753</span>
-<span class="co">#&gt; [1] 0.05312209</span>
-<span class="co">#&gt; [1] 0.02620245</span>
-<span class="co">#&gt; [1] 0.07765218</span>
-<span class="co">#&gt; [1] 0.02205492</span>
-<span class="co">#&gt; [1] 0.02224536</span>
-<span class="co">#&gt; [1] 0.08183586</span>
-<span class="co">#&gt; [1] 0.08461013</span>
-<span class="co">#&gt; [1] 0.05072078</span></code></pre></div>
+<span class="co">#&gt; [1] 64.89457</span>
+<span class="co">#&gt; [1] 1.388653</span>
+<span class="co">#&gt; [1] 0.8342325</span>
+<span class="co">#&gt; [1] 0.3274487</span>
+<span class="co">#&gt; [1] 0.2279042</span>
+<span class="co">#&gt; [1] 0.308351</span>
+<span class="co">#&gt; [1] 0.1516915</span>
+<span class="co">#&gt; [1] 0.313251</span>
+<span class="co">#&gt; [1] 0.1442063</span>
+<span class="co">#&gt; [1] 0.1753969</span>
+<span class="co">#&gt; [1] 0.1390111</span>
+<span class="co">#&gt; [1] 0.1173238</span>
+<span class="co">#&gt; [1] 0.0095947</span>
+<span class="co">#&gt; [1] 0.06546511</span>
+<span class="co">#&gt; [1] 0.09936965</span>
+<span class="co">#&gt; [1] 0.04759812</span>
+<span class="co">#&gt; [1] 0.07767515</span>
+<span class="co">#&gt; [1] 0.124133</span>
+<span class="co">#&gt; [1] 0.08654974</span>
+<span class="co">#&gt; [1] 0.0511227</span>
+<span class="co">#&gt; [1] 0.015945</span></code></pre></div>
 <div class="section level4">
 <h4 id="using-a-while-loop-to-demonstrate-the-same-concept-this-section-also-demonstrates-use-of-breaks-within-loops-">Using a “while” loop to demonstrate the same concept; this section also demonstrates use of breaks within loops.<a class="anchor" aria-label="anchor" href="#using-a-while-loop-to-demonstrate-the-same-concept-this-section-also-demonstrates-use-of-breaks-within-loops-"></a>
 </h4>
@@ -286,12 +286,12 @@
 <span class="va">positive_values</span> <span class="op">&lt;-</span> <span class="va">example_vector</span><span class="op">[</span><span class="va">example_vector</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span>
 
 <span class="va">negative_values</span>
-<span class="co">#&gt;  [1] -0.96781567 -0.15030591 -1.33959052 -0.77846854 -0.78455557 -0.04501193</span>
-<span class="co">#&gt;  [7] -1.39148782 -0.55672839 -2.24822736 -0.97646352</span></code></pre></div>
+<span class="co">#&gt;  [1] -1.85805647 -0.56960226 -0.57722737 -0.11710178 -0.16746408 -0.02955075</span>
+<span class="co">#&gt;  [7] -1.88220813 -0.21689718 -0.09837174 -0.49943947 -0.77250921</span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">positive_values</span>
-<span class="co">#&gt;  [1] 2.51766151 0.71803751 1.47545339 0.01677414 0.49729133 1.19054398</span>
-<span class="co">#&gt;  [7] 0.27561381 0.93814552 1.63204427 0.63299063</span></code></pre></div>
+<span class="co">#&gt; [1] 0.5945284 0.3172080 1.4595647 0.6879365 0.4928945 0.6764178 1.6157976</span>
+<span class="co">#&gt; [8] 0.5238739 0.3589264</span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="with-a-dataframe">With a dataframe<a class="anchor" aria-label="anchor" href="#with-a-dataframe"></a>
@@ -354,16 +354,16 @@
 <span class="co">#&gt; <span style="color: #949494;"># A tibble: 100 x 2</span></span>
 <span class="co">#&gt;    Values Frequencies</span>
 <span class="co">#&gt;     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1       <span style="text-decoration: underline;">49</span>751</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2       <span style="text-decoration: underline;">49</span>635</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3       <span style="text-decoration: underline;">49</span>892</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4       <span style="text-decoration: underline;">49</span>210</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5       <span style="text-decoration: underline;">49</span>675</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6       <span style="text-decoration: underline;">49</span>283</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7       <span style="text-decoration: underline;">49</span>904</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8       <span style="text-decoration: underline;">49</span>711</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9       <span style="text-decoration: underline;">49</span>490</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10       <span style="text-decoration: underline;">49</span>349</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>      1       <span style="text-decoration: underline;">49</span>502</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>      2       <span style="text-decoration: underline;">49</span>455</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>      3       <span style="text-decoration: underline;">49</span>650</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>      4       <span style="text-decoration: underline;">49</span>550</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>      5       <span style="text-decoration: underline;">49</span>569</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>      6       <span style="text-decoration: underline;">49</span>512</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>      7       <span style="text-decoration: underline;">49</span>315</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>      8       <span style="text-decoration: underline;">49</span>342</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>      9       <span style="text-decoration: underline;">49</span>527</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     10       <span style="text-decoration: underline;">49</span>534</span>
 <span class="co">#&gt; <span style="color: #949494;"># ... with 90 more rows</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">frequency_max</span> <span class="op">&lt;-</span> <span class="va">frequency_table</span><span class="op">[</span><span class="va">frequency_table</span><span class="op">$</span><span class="va">Values</span> <span class="op">==</span> <span class="fl">100</span>, <span class="op">]</span>
@@ -374,10 +374,10 @@
   
 <span class="va">frequency_range</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">max_frequency</span> <span class="op">-</span> <span class="va">min_frequency</span><span class="op">)</span>
 <span class="va">frequency_range</span>
-<span class="co">#&gt; [1] -243</span></code></pre></div>
+<span class="co">#&gt; [1] -111</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">frequency_table</span><span class="op">$</span><span class="va">Frequencies</span><span class="op">)</span>
-<span class="co">#&gt; [1] 49510.62</span></code></pre></div>
+<span class="co">#&gt; [1] 49501</span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">freq</span><span class="op">)</span></code></pre></div>
 <p><img src="R_Basics_Practicals_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>

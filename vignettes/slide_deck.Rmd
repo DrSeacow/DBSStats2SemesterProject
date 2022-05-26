@@ -1,5 +1,5 @@
 ---
-title: "Intro to Immuno Analyze"
+title: "Intro to Immuno Analyze - IO Slide Deck"
 author: "Dan Siegel"
 date: "5/22/2022"
 output: ioslides_presentation
